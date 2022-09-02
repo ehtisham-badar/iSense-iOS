@@ -20,6 +20,7 @@
 		FF66B4DB28B9FAF500A4C27E /* AppStrings.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF66B4DA28B9FAF500A4C27E /* AppStrings.swift */; };
 		FF66B4DD28B9FC7B00A4C27E /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF66B4DC28B9FC7B00A4C27E /* TestViewController.swift */; };
 		FF66B4DF28B9FC8300A4C27E /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF66B4DE28B9FC8300A4C27E /* SettingsViewController.swift */; };
+		FFAAFDF228C289BB0097A457 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFAAFDF128C289BB0097A457 /* BaseViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,6 +39,7 @@
 		FF66B4DA28B9FAF500A4C27E /* AppStrings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStrings.swift; sourceTree = "<group>"; };
 		FF66B4DC28B9FC7B00A4C27E /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		FF66B4DE28B9FC8300A4C27E /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		FFAAFDF128C289BB0097A457 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -122,6 +124,7 @@
 				FF66B4CD28B9F08A00A4C27E /* MainViewController.swift */,
 				FF66B4DC28B9FC7B00A4C27E /* TestViewController.swift */,
 				FF66B4DE28B9FC8300A4C27E /* SettingsViewController.swift */,
+				FFAAFDF128C289BB0097A457 /* BaseViewController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -221,6 +224,7 @@
 				FF66B4DD28B9FC7B00A4C27E /* TestViewController.swift in Sources */,
 				FF66B4B728B9EED600A4C27E /* SceneDelegate.swift in Sources */,
 				FF66B4D628B9F5CF00A4C27E /* UIColorExtension.swift in Sources */,
+				FFAAFDF228C289BB0097A457 /* BaseViewController.swift in Sources */,
 				FF66B4D428B9F5AF00A4C27E /* UIViewExtension.swift in Sources */,
 				FF66B4CE28B9F08A00A4C27E /* MainViewController.swift in Sources */,
 				FF66B4D828B9F5ED00A4C27E /* UIImageExtension.swift in Sources */,

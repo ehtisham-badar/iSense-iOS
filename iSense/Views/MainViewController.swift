@@ -5,9 +5,14 @@
 //  Created by Ehtisham Badar on 27/08/2022.
 //
 
+//450 -> 270
+//370 -> 200
+//370 -> 200
+
+
 import UIKit
 
-class MainViewController: UIViewController {
+class MainViewController: BaseViewController {
     
     //MARK: - IBOutlets
     
@@ -25,22 +30,34 @@ class MainViewController: UIViewController {
         super.viewDidLoad()
         self.navigationController?.isNavigationBarHidden = true
         setupUI()
+        print("Seconds Save are = \(UserDefaults.standard.string(forKey: "seconds") ?? "no seconds saved")")
+        navigateToSettings()
     }
     
     //MARK: - Private Functions
+    
+    func navigateToSettings(){
+        guard let seconds = UserDefaults.standard.string(forKey: "seconds") else{
+            return
+        }
+        print(seconds)
+        didPressSettings(self)
+    }
     
     private func setupUI(){
         defaultScreenView()
     }
     
     private func defaultScreenView(){
-        sensorOnOffImage.image = UIImage.sensorOn
-        lblSensor.text = AppStrings.onSensorText
-        lblSensorDesc.text = AppStrings.offSensorDesc
-        lblSensor.textColor = UIColor.appYellowColor
-        lblSensorDesc.textColor = UIColor.appRedColor
+        sensorOnOffImage.image = UIImage.sensorOff
+        lblSensor.text = AppStrings.offSensorText
+        lblSensorDesc.text = AppStrings.onSensorDesc
+        lblSensor.textColor = UIColor.appRedColor
+        lblSensorDesc.textColor = UIColor.appYellowColor
     }
     
+//    double teslaXYZ = Math.sqrt((magnetX*magnetX)+(magnetY*magnetY)+(magnetZ*magnetZ));
+
     //MARK: - IBActions
     
     @IBAction func didPressSensorOnOffBtn(_ sender: Any) {
@@ -56,6 +73,7 @@ class MainViewController: UIViewController {
         let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: SettingsViewController.self)) as! SettingsViewController
         self.navigationController?.pushViewController(vc, animated: true)
     }
+    
     @IBAction func didPressTest(_ sender: Any) {
         let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: TestViewController.self)) as! TestViewController
         self.navigationController?.pushViewController(vc, animated: true)
