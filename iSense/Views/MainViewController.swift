@@ -11,6 +11,7 @@
 
 
 import UIKit
+import CoreMotion
 
 class MainViewController: BaseViewController {
     
@@ -19,22 +20,39 @@ class MainViewController: BaseViewController {
     @IBOutlet weak var sensorOnOffImage: UIImageView!
     @IBOutlet weak var lblSensor: UILabel!
     @IBOutlet weak var lblSensorDesc: UILabel!
+    @IBOutlet weak var sideConstraintForSwitch: NSLayoutConstraint!
     
     //MARK: - Variables
     
+    private var updateInterval = ""
     private var isSensorOn: Bool = true
+    private var motionManager = CMMotionManager()
     
     //MARK: - Load View
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        updateInterval = UserDefaults.standard.string(forKey: "seconds") ?? "no seconds saved"
         self.navigationController?.isNavigationBarHidden = true
         setupUI()
-        print("Seconds Save are = \(UserDefaults.standard.string(forKey: "seconds") ?? "no seconds saved")")
+        print("Seconds Save are = \(updateInterval)")
         navigateToSettings()
     }
     
     //MARK: - Private Functions
+    
+    private func detectMagnometerReading(){
+        if motionManager.isDeviceMotionAvailable{
+            motionManager.magnetometerUpdateInterval = Double(updateInterval) ?? 0.0
+            motionManager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical, to: .main) { motion, error in
+                if error == nil{
+                    print(motion!)
+                }else{
+                    print(error!)
+                }
+            }
+        }
+    }
     
     func navigateToSettings(){
         guard let seconds = UserDefaults.standard.string(forKey: "seconds") else{
@@ -49,7 +67,8 @@ class MainViewController: BaseViewController {
     }
     
     private func defaultScreenView(){
-        sensorOnOffImage.image = UIImage.sensorOff
+//        sensorOnOffImage.image = UIImage.sensorOff
+        sideConstraintForSwitch.constant = 100
         lblSensor.text = AppStrings.offSensorText
         lblSensorDesc.text = AppStrings.onSensorDesc
         lblSensor.textColor = UIColor.appRedColor
@@ -61,8 +80,11 @@ class MainViewController: BaseViewController {
     //MARK: - IBActions
     
     @IBAction func didPressSensorOnOffBtn(_ sender: Any) {
-        sensorOnOffImage.image = (sensorOnOffImage.image == UIImage.sensorOn) ? UIImage.sensorOff : UIImage.sensorOn
-        isSensorOn = (sensorOnOffImage.image == UIImage.sensorOn) ? true : false
+        UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+            self.sideConstraintForSwitch.constant = (self.sideConstraintForSwitch.constant == 100) ? 0 : 100
+            self.view.layoutIfNeeded()
+        }
+        isSensorOn = (sideConstraintForSwitch.constant == 0) ? true : false
         lblSensor.textColor = isSensorOn ? UIColor.appYellowColor : UIColor.appRedColor
         lblSensorDesc.textColor = isSensorOn ? UIColor.appRedColor : UIColor.appYellowColor
         lblSensor.text = isSensorOn ? AppStrings.onSensorText : AppStrings.offSensorText

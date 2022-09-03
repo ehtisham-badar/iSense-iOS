@@ -47,7 +47,7 @@ class SettingsViewController: UIViewController {
     }
     
     @objc func dismissKeyboard(){
-        if secondsTF.text != ""{ 
+        if secondsTF.text != ""{
             UserDefaults.standard.set(secondsTF.text ?? "", forKey: "seconds")
         }
         view.endEditing(true)
