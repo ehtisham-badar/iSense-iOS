@@ -109,9 +109,10 @@ class MainViewController: BaseViewController {
         UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
             self.sideConstraintForSwitch.constant = (self.sideConstraintForSwitch.constant == 100) ? 0 : 100
             self.view.layoutIfNeeded()
+        } completion: { animationDone in
+            self.isSensorOn ? self.presentBlackScreen() : nil
         }
         isSensorOn = (sideConstraintForSwitch.constant == 0) ? true : false
-        isSensorOn ? presentBlackScreen() : nil
         lblSensor.textColor = isSensorOn ? UIColor.appYellowColor : UIColor.appRedColor
         lblSensorDesc.textColor = isSensorOn ? UIColor.appRedColor : UIColor.appYellowColor
         lblSensor.text = isSensorOn ? AppStrings.onSensorText : AppStrings.offSensorText
