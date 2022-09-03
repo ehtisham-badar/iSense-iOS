@@ -21,6 +21,22 @@ extension UIColor{
         return hexStringToUIColor(hex: "#AA2020")
     }
     
+    static var color2: UIColor?{
+        return hexStringToUIColor(hex: "#c3ab68")
+    }
+    
+    static var color1: UIColor?{
+        return hexStringToUIColor(hex: "#9e8954")
+    }
+    
+    
+    static var red1: UIColor?{
+        return hexStringToUIColor(hex: "#871719")
+    }
+    
+    static var red2: UIColor?{
+        return hexStringToUIColor(hex: "#591113")
+    }
     static func hexStringToUIColor (hex:String) -> UIColor {
         var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         

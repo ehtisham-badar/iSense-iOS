@@ -14,10 +14,22 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var secondsTF: UITextField!
     @IBOutlet weak var notificationOnOffImage: UIImageView!
     @IBOutlet weak var heightOfNotificationView: NSLayoutConstraint!
+    @IBOutlet weak var movementSensorImage: UIImageView!
+    @IBOutlet weak var magnetSensorImage: UIImageView!
+    @IBOutlet weak var tiltInitialValueTF: UITextField!
+    @IBOutlet weak var tiltFinalValueTF: UITextField!
+    @IBOutlet weak var magnetInitialValueTF: UITextField!
+    @IBOutlet weak var magnetFinalValueTF: UITextField!
+    @IBOutlet weak var rangeConfirmTF: UITextField!
+    @IBOutlet weak var waitTF: UITextField!
+    @IBOutlet weak var notificationTF: UITextField!
     
     //MARK: - Variables
     
     private var isNotificationOn: Bool = true
+    private var isMovementOn: Bool = true
+    private var isMagnetOn: Bool = true
+    
     
     //MARK: - Load View
     
@@ -25,17 +37,29 @@ class SettingsViewController: UIViewController {
         super.viewDidLoad()
         addGestureToDismissKeyboard()
         setData()
+        secondsTF.setPlaceholder()
+        tiltInitialValueTF.setPlaceholder()
+        tiltFinalValueTF.setPlaceholder()
+        magnetInitialValueTF.setPlaceholder()
+        magnetFinalValueTF.setPlaceholder()
+        rangeConfirmTF.setPlaceholder()
+        waitTF.setPlaceholder()
+        notificationTF.setPlaceholder()
     }
     
     //MARK: - Private Functions
     
     private func setData(){
         notificationOnOffImage.image = UIImage.sensorOff
+        movementSensorImage.image = UIImage.sensorOff
+        magnetSensorImage.image = UIImage.sensorOff
+        
         guard let seconds = UserDefaults.standard.string(forKey: "seconds") else{
             return
         }
         secondsTF.text = seconds
     }
+    
     
     func addGestureToDismissKeyboard(){
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(
@@ -63,7 +87,26 @@ class SettingsViewController: UIViewController {
         notificationOnOffImage.image = (notificationOnOffImage.image == UIImage.sensorOn) ? UIImage.sensorOff : UIImage.sensorOn
         isNotificationOn = (notificationOnOffImage.image == UIImage.sensorOn) ? true : false
     }
+    
+    @IBAction func movementBtnPressed(_ sender: Any) {
+        movementSensorImage.image = (movementSensorImage.image == UIImage.sensorOn) ? UIImage.sensorOff : UIImage.sensorOn
+        isMovementOn = (movementSensorImage.image == UIImage.sensorOn) ? true : false
+    }
+    
+    @IBAction func magnetBtnPressed(_ sender: Any) {
+        magnetSensorImage.image = (magnetSensorImage.image == UIImage.sensorOn) ? UIImage.sensorOff : UIImage.sensorOn
+        isMagnetOn = (magnetSensorImage.image == UIImage.sensorOn) ? true : false
+    }
 }
 extension SettingsViewController: UITextFieldDelegate{
     
+}
+extension UITextField{
+    func setPlaceholder(){
+        self.backgroundColor = .clear
+        self.attributedPlaceholder = NSAttributedString(
+            string: "0",
+            attributes: [NSAttributedString.Key.foregroundColor: UIColor.appYellowColor!]
+        )
+    }
 }

@@ -21,6 +21,7 @@
 		FF66B4DD28B9FC7B00A4C27E /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF66B4DC28B9FC7B00A4C27E /* TestViewController.swift */; };
 		FF66B4DF28B9FC8300A4C27E /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF66B4DE28B9FC8300A4C27E /* SettingsViewController.swift */; };
 		FFAAFDF228C289BB0097A457 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFAAFDF128C289BB0097A457 /* BaseViewController.swift */; };
+		FFAAFDF428C3814E0097A457 /* BlackScreenViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFAAFDF328C3814E0097A457 /* BlackScreenViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +41,7 @@
 		FF66B4DC28B9FC7B00A4C27E /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
 		FF66B4DE28B9FC8300A4C27E /* SettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		FFAAFDF128C289BB0097A457 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
+		FFAAFDF328C3814E0097A457 /* BlackScreenViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlackScreenViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -125,6 +127,7 @@
 				FF66B4DC28B9FC7B00A4C27E /* TestViewController.swift */,
 				FF66B4DE28B9FC8300A4C27E /* SettingsViewController.swift */,
 				FFAAFDF128C289BB0097A457 /* BaseViewController.swift */,
+				FFAAFDF328C3814E0097A457 /* BlackScreenViewController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -223,6 +226,7 @@
 				FF66B4B528B9EED600A4C27E /* AppDelegate.swift in Sources */,
 				FF66B4DD28B9FC7B00A4C27E /* TestViewController.swift in Sources */,
 				FF66B4B728B9EED600A4C27E /* SceneDelegate.swift in Sources */,
+				FFAAFDF428C3814E0097A457 /* BlackScreenViewController.swift in Sources */,
 				FF66B4D628B9F5CF00A4C27E /* UIColorExtension.swift in Sources */,
 				FFAAFDF228C289BB0097A457 /* BaseViewController.swift in Sources */,
 				FF66B4D428B9F5AF00A4C27E /* UIViewExtension.swift in Sources */,
