@@ -21,4 +21,8 @@ class BlackScreenViewController: UIViewController {
     @objc func dismissView(){
         self.dismiss(animated: true)
     }
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        NotificationCenter.default.post(name: Notification.Name("stopSensor"), object: nil)
+    }
 }
