@@ -47,6 +47,15 @@ extension UIColor{
     static var redColor: UIColor?{
         return hexStringToUIColor(hex: "#5D1111")
     }
+    
+    
+    static var redNoDetectColor: UIColor?{
+        return hexStringToUIColor(hex: "#FF3333")
+    }
+    
+    static var greenDetectColor: UIColor?{
+        return hexStringToUIColor(hex: "#40ED90")
+    }
     static func hexStringToUIColor (hex:String) -> UIColor {
         var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         

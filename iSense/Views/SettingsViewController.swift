@@ -30,6 +30,15 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var notificationMessageTF: UITextField!
     @IBOutlet weak var heightOfTiltView: NSLayoutConstraint!
     @IBOutlet weak var heightOfMovementView: NSLayoutConstraint!
+    @IBOutlet weak var notificationSideConstraint: NSLayoutConstraint!
+    @IBOutlet weak var notiSensorBackView: UIView!
+    @IBOutlet weak var notiSensorSwitchView: UIView!
+    @IBOutlet weak var tiltSensorBackView: UIView!
+    @IBOutlet weak var tileSensorSwitchView: UIView!
+    @IBOutlet weak var tileSideConstraint: NSLayoutConstraint!
+    @IBOutlet weak var magnetSensorBackView: UIView!
+    @IBOutlet weak var magnetSensorSwitchView: UIView!
+    @IBOutlet weak var magnetSideConstraint: NSLayoutConstraint!
     //MARK: - Variables
     
     private var isNotificationOn: Bool = true
@@ -48,9 +57,9 @@ class SettingsViewController: UIViewController {
     //MARK: - Private Functions
     
     private func setData(){
-        notificationOnOffImage.image = UIImage.sensorOff
-        movementSensorImage.image = UIImage.sensorOff
-        magnetSensorImage.image = UIImage.sensorOff
+        notificationSideConstraint.constant = 50
+        tileSideConstraint.constant = 50
+        magnetSideConstraint.constant = 50
         
         let seconds = UserDefaults.standard.string(forKey: "seconds")
         let tilt_initial = UserDefaults.standard.string(forKey: "tilt_initial")
@@ -82,17 +91,42 @@ class SettingsViewController: UIViewController {
         let isMovementOn = UserDefaults.standard.bool(forKey: "is_movement_on")
         let isMagnetOn = UserDefaults.standard.bool(forKey: "is_magnet_on")
         
-        notificationOnOffImage.image = (!isNotificationOn) ? UIImage.sensorOff : UIImage.sensorOn
+        notificationSideConstraint.constant = (!isNotificationOn) ? 50 : 0
         heightOfNotificationView.constant = isNotificationOn ? 430 : 270
-        mainHeightConstraint.constant = isNotificationOn ? mainHeightConstraint.constant+200 : mainHeightConstraint.constant-160
+//        mainHeightConstraint.constant = isNotificationOn ? mainHeightConstraint.constant+200 : mainHeightConstraint.constant-160
+        notiSensorBackView.backgroundColor = isNotificationOn ? UIColor.color1 : UIColor.red2
+        notiSensorSwitchView.backgroundColor = isNotificationOn ? UIColor.color2 : UIColor.red1
         
-        movementSensorImage.image = (!isMovementOn) ? UIImage.sensorOff : UIImage.sensorOn
+//        movementSensorImage.image = (!isMovementOn) ? UIImage.sensorOff : UIImage.sensorOn
+        tileSideConstraint.constant = (!isMovementOn) ? 50 : 0
         heightOfMovementView.constant = isMovementOn ? 380 : 220
-        mainHeightConstraint.constant = isMovementOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+//        mainHeightConstraint.constant = isMovementOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+        tiltSensorBackView.backgroundColor = isMovementOn ? UIColor.color1 : UIColor.red2
+        tileSensorSwitchView.backgroundColor = isMovementOn ? UIColor.color2 : UIColor.red1
         
+        magnetSideConstraint.constant = (!isMagnetOn) ? 50 : 0
         magnetSensorImage.image = (!isMagnetOn) ? UIImage.sensorOff : UIImage.sensorOn
         heightOfTiltView.constant = isMagnetOn ? 380 : 220
-        mainHeightConstraint.constant = isMagnetOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+//        mainHeightConstraint.constant = isMagnetOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+        magnetSensorBackView.backgroundColor = isMagnetOn ? UIColor.color1 : UIColor.red2
+        magnetSensorSwitchView.backgroundColor = isMagnetOn ? UIColor.color2 : UIColor.red1
+        if isNotificationOn && isMovementOn && isMagnetOn{
+            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160 + 160
+        }else if isNotificationOn && isMovementOn && !isMagnetOn{
+            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160
+        }else if isNotificationOn && !isMovementOn && !isMagnetOn{
+            mainHeightConstraint.constant = mainHeightConstraint.constant + 160
+        }else if !isNotificationOn && !isMovementOn && isMagnetOn{
+            mainHeightConstraint.constant = mainHeightConstraint.constant + 160
+        }else if !isNotificationOn && isMovementOn && !isMagnetOn{
+            mainHeightConstraint.constant = mainHeightConstraint.constant + 160
+        }else if isNotificationOn && !isMovementOn && isMagnetOn{
+            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160
+        }else if !isNotificationOn && isMovementOn && isMagnetOn{
+            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160
+        }else if !isNotificationOn && !isMovementOn && !isMagnetOn{
+            mainHeightConstraint.constant = mainHeightConstraint.constant
+        }
     }
     
     
@@ -130,26 +164,41 @@ class SettingsViewController: UIViewController {
     }
     
     @IBAction func getNotificationPressed(_ sender: Any) {
-        notificationOnOffImage.image = (notificationOnOffImage.image == UIImage.sensorOn) ? UIImage.sensorOff : UIImage.sensorOn
-        isNotificationOn = (notificationOnOffImage.image == UIImage.sensorOn) ? true : false
+        UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+            self.notificationSideConstraint.constant = (self.notificationSideConstraint.constant == 0) ? 50 : 0
+            self.view.layoutIfNeeded()
+        }
+        isNotificationOn = (notificationSideConstraint.constant == 0) ? true : false
         UserDefaults.standard.set(isNotificationOn, forKey: "is_notification_on")
         heightOfNotificationView.constant = isNotificationOn ? 430 : 270
         mainHeightConstraint.constant = isNotificationOn ? mainHeightConstraint.constant+200 : mainHeightConstraint.constant-160
+        notiSensorBackView.backgroundColor = isNotificationOn ? UIColor.color1 : UIColor.red2
+        notiSensorSwitchView.backgroundColor = isNotificationOn ? UIColor.color2 : UIColor.red1
     }
     
     @IBAction func movementBtnPressed(_ sender: Any) {
-        movementSensorImage.image = (movementSensorImage.image == UIImage.sensorOn) ? UIImage.sensorOff : UIImage.sensorOn
-        isMovementOn = (movementSensorImage.image == UIImage.sensorOn) ? true : false
+        UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+            self.tileSideConstraint.constant = (self.tileSideConstraint.constant == 0) ? 50 : 0
+            self.view.layoutIfNeeded()
+        }
+        isMovementOn = (tileSideConstraint.constant == 0) ? true : false
         UserDefaults.standard.set(isMovementOn, forKey: "is_movement_on")
         heightOfMovementView.constant = isMovementOn ? 380 : 220
         mainHeightConstraint.constant = isMovementOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+        tiltSensorBackView.backgroundColor = isMovementOn ? UIColor.color1 : UIColor.red2
+        tileSensorSwitchView.backgroundColor = isMovementOn ? UIColor.color2 : UIColor.red1
     }
     
     @IBAction func magnetBtnPressed(_ sender: Any) {
-        magnetSensorImage.image = (magnetSensorImage.image == UIImage.sensorOn) ? UIImage.sensorOff : UIImage.sensorOn
-        isMagnetOn = (magnetSensorImage.image == UIImage.sensorOn) ? true : false
+        UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+            self.magnetSideConstraint.constant = (self.magnetSideConstraint.constant == 0) ? 50 : 0
+            self.view.layoutIfNeeded()
+        }
+        isMagnetOn = (magnetSideConstraint.constant == 0) ? true : false
         UserDefaults.standard.set(isMagnetOn, forKey: "is_magnet_on")
         heightOfTiltView.constant = isMagnetOn ? 380 : 220
         mainHeightConstraint.constant = isMagnetOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+        magnetSensorBackView.backgroundColor = isMagnetOn ? UIColor.color1 : UIColor.red2
+        magnetSensorSwitchView.backgroundColor = isMagnetOn ? UIColor.color2 : UIColor.red1
     }
 }
