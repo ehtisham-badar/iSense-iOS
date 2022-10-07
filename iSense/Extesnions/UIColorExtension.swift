@@ -2,7 +2,7 @@
 //  UIColorExtension.swift
 //  iSense
 //
-//  Created by Ehtisham Badar on 27/08/2022.
+//  Created by Abdullah Javed on 27/08/2022.
 //
 
 import UIKit
@@ -56,7 +56,20 @@ extension UIColor{
     static var greenDetectColor: UIColor?{
         return hexStringToUIColor(hex: "#40ED90")
     }
-    static func hexStringToUIColor (hex:String) -> UIColor {
+    
+    static var noDetectRedColor: UIColor? {
+        return UIColor(red: 0.4450474977493286, green: 0.10395798832178116, blue: 0.08132988959550858, alpha: 1.0)
+    }
+    
+    static var noDetectTextColor: UIColor? {
+        return UIColor(red: 255/255, green: 51/255, blue: 51/255, alpha: 1.0)
+    }
+    
+    static var disabledColor: UIColor?{
+        return .darkGray
+    }
+    
+    static func hexStringToUIColor (hex:String,alpha: CGFloat = 1.0) -> UIColor {
         var cString:String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()
         
         if (cString.hasPrefix("#")) {
@@ -74,7 +87,7 @@ extension UIColor{
             red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
             green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
             blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: CGFloat(1.0)
+            alpha: alpha
         )
     }
 }

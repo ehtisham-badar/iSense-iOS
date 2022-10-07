@@ -2,7 +2,7 @@
 //  MainViewController.swift
 //  iSense
 //
-//  Created by Ehtisham Badar on 27/08/2022.
+//  Created by Abdullah Javed on 27/08/2022.
 //
 
 //450 -> 270
@@ -51,13 +51,11 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
     
     var range_confirm = "0"
     var wait_between_notifications = "0"
+        
+    override var prefersHomeIndicatorAutoHidden: Bool { return true }
     
     var magnetDetected = false
     var tiltDetected = false
-    
-    var semaphore = DispatchSemaphore(value: 0)
-    
-    override var prefersHomeIndicatorAutoHidden: Bool { return true }
 
     //MARK: - Load View
     
@@ -69,6 +67,18 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        reinitializeAll()
+        
+        setupUI()
+        print("Seconds Save are = \(updateInterval)")
+        navigateToSettings()
+    }
+    
+    func reinitializeAll(){
+        
+        magnetDetections.removeAll()
+        tiltDetections.removeAll()
         
         notificationMessage = UserDefaults.standard.string(forKey: "notification_message") ?? ""
         tiltNotificationMessage = UserDefaults.standard.string(forKey: "movement_message") ?? ""
@@ -88,32 +98,26 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
         magnetInitial = Int(UserDefaults.standard.string(forKey: "magnet_initial")  ?? "0") ?? 0
         magnetFinal = Int(UserDefaults.standard.string(forKey: "magnet_final")  ?? "0") ?? 0
         
-        UNUserNotificationCenter.current().delegate = self
-        let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options: [.badge,.alert, .sound]) { (granted, error) in
-                if granted {
-                    // do something
-                }
-            }
+        magnetDetected = false
+        tiltDetected = false
         
         self.navigationController?.isNavigationBarHidden = true
-        setupUI()
-        print("Seconds Save are = \(updateInterval)")
-        navigateToSettings()
     }
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        print("Got the msg...")
-        completionHandler([.badge, .sound, .alert])
-    }
+    
+
+  
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(forName: Notification.Name("stopSensor"), object: nil, queue: .main) { notification in
             self.stopSensor()
         }
-        updateInterval = UserDefaults.standard.string(forKey: "seconds") ?? "no seconds saved"
         
         tiltDetections.removeAll()
         magnetDetections.removeAll()
+        
+        reinitializeAll()
+        
+        //stopSensor()
     }
     
     func stopSensor(){
@@ -133,7 +137,7 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
                 motionManager.stopDeviceMotionUpdates()
                 motionManager.stopMagnetometerUpdates()
                 
-                
+                reinitializeAll()
             }
         }
     }
@@ -148,7 +152,7 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
 
             motionManager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical,to: .main) { [self] motion, error in
                 if let motion = motion {
-                    print(motion)
+//                    print(motion)
                     let _ = motion.magneticField.accuracy
                     let x = motion.magneticField.field.x
                     let y = motion.magneticField.field.y
@@ -180,14 +184,32 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
                         }
                         
                         if self.magnetDetections.count >= 2 {
-                            let value = (self.magnetDetections[self.magnetDetections.count - 1] - self.magnetDetections[self.magnetDetections.count - 2])
-                            if (value >= magnetInitial &&  value <= magnetFinal)  {
+                            let average = Int(self.magnetDetections.reduce(0, +) / self.magnetDetections.count)
+                            let highest = self.magnetDetections.max() ?? 0
+                            let lowest =  self.magnetDetections.min() ?? 0
+                            let value1 = average > highest ? average - highest : average > lowest ? average - lowest : 0
+                            let value2 = average < highest ? highest - average : average < lowest ? lowest - average : 0
+                            
+                            if ((value1 >= magnetInitial &&  value1 <= magnetFinal) || (value2 >= magnetInitial &&  value2 <= magnetFinal))  {
                                 
-                               is_magnet_on = false
-                                
-                               magnetDetected = true
-                                                                                                
-                               timerTiltDetection = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(checkForPhoneDetection), userInfo: nil, repeats: true)
+                                if is_movement_on {
+                                    is_magnet_on = false
+                                      
+                                    magnetDetected = true
+                                     
+                                    tiltDetected = false
+                                                                                                     
+                                    timerTiltDetection = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(checkForPhoneDetection), userInfo: nil, repeats: true)
+                                }else {
+                                    sendNotification(title: magnetNotificationMessage, body: "Magnet detected", secondsToShow: Int(wait_between_notifications) ?? 0, category: "magnet")
+                                    
+                                    motionManager.stopMagnetometerUpdates()
+                                    motionManager.stopDeviceMotionUpdates()
+                                    
+                                    stopSensor()
+                                    
+                                    sensorOnOffMethod()
+                                }
                             }
                         }
                     }
@@ -195,36 +217,33 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
                 else {
                     print("Device motion is nil.")
                 }
-                if !is_magnet_on {
-                    motionManager.stopMagnetometerUpdates()
-                }
-                if !is_movement_on {
-                    motionManager.stopDeviceMotionUpdates()
-                }
-                
-                if !is_magnet_on && !is_movement_on {
-                    stopSensor()
-                }
             }
         }
     }
+
     
     func checkIfPhoneDetection(){
         
-        if magnetDetected {
+        if tiltDetected {
             return
         }
     
         if self.tiltDetections.count >= 2 {
-            let value = (self.tiltDetections[self.tiltDetections.count - 1] - self.tiltDetections[self.tiltDetections.count - 2])
-            if (value >= tiltInitial &&  value <= tiltFinal)  {
-                sendNotification(title: "Phone Movement detected", body: tiltNotificationMessage, secondsToShow: 1)
+            let average = Int(self.tiltDetections.reduce(0, +) / self.tiltDetections.count)
+            let highest = self.tiltDetections.max() ?? 0
+            let lowest =  self.tiltDetections.min() ?? 0
+            let value1 = average > highest ? average - highest : average > lowest ? average - lowest : 0
+            let value2 = average < highest ? highest - average : average < lowest ? lowest - average : 0
+            if ((value1 >= tiltInitial &&  value1 <= tiltFinal) || (value2 >= tiltInitial &&  value2 <= tiltFinal))  {
+                sendNotification(title: tiltNotificationMessage, body: "Phone Movement detected", secondsToShow: 1, category: "movement")
                 motionManager.stopMagnetometerUpdates()
                 motionManager.stopDeviceMotionUpdates()
-                
-                magnetDetected = false
+                                
+                tiltDetected = true
                 
                 stopSensor()
+                
+                sensorOnOffMethod()
             }
         }
     }
@@ -233,8 +252,8 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
         if let attitude = self.motionManager.deviceMotion?.attitude{
             let xr = CGFloat(-attitude.pitch * 2 / .pi)
             let yr = CGFloat(round(-((180 / Double.pi) * attitude.pitch) * 10)/10)
-            print("Y: " + String(describing: yr))
-            print("X: " + String(describing: xr))
+//            print("Y: " + String(describing: yr))
+//            print("X: " + String(describing: xr))
             let angle = atan2(yr, xr) + (.pi / 2)
             let angleDegrees = angle * 180.0 / .pi
             
@@ -248,13 +267,16 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
         if(Int(countTiltDetection) > 0) {
             countTiltDetection = countTiltDetection - 1
         }else{
-            countTiltDetection = Int(range_confirm) ?? 0
-            timerTiltDetection.invalidate()
-            sendNotification(title: "Magnet detected", body: magnetNotificationMessage, secondsToShow: 1)
-
-            let time = Double(wait_between_notifications) ?? 1.0
-            DispatchQueue.main.asyncAfter(deadline: .now() + time) { [self] in
-                magnetDetected = false
+            if(!tiltDetected){
+                countTiltDetection = Int(range_confirm) ?? 0
+                timerTiltDetection.invalidate()
+                sendNotification(title: magnetNotificationMessage, body: "Magnet detected", secondsToShow: 1, category: "magnet")
+                
+                let time = Double(wait_between_notifications) ?? 1.0
+                tiltDetected = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + time) { [self] in
+                    tiltDetected = false
+                }
             }
         }
     }
@@ -302,6 +324,22 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
     //MARK: - IBActions
     
     @IBAction func didPressSensorOnOffBtn(_ sender: Any) {
+        sensorOnOffMethod()
+    }
+    
+    @IBAction func didPressVideosButton(_ sender: Any) {
+        guard let url = URL(string: "https://www.youtube.com/channel/UCNq9yUZg1DFDQS6sI4jGH5A/featured") else {
+          return //be safe
+        }
+
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        } else {
+            UIApplication.shared.openURL(url)
+        }
+    }
+    
+    func sensorOnOffMethod(){
         guard updateInterval != "no seconds saved" else{
             showAlert()
             return
@@ -312,7 +350,7 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
         } completion: { animationDone in
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
                 if self.isSensorOn{
-                    self.presentBlackScreen()
+//                    self.presentBlackScreen()
                 }
             }
         }
@@ -340,7 +378,11 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
         }else{
             count = Int(updateInterval) ?? 0
             timer.invalidate()
-            sendNotification(title: "Sensor Started", body: notificationMessage, secondsToShow: 1,startSensor: true)
+            if(is_notification_on) {
+                sendNotification(title: notificationMessage, body: "Sensor Started", secondsToShow: 1, category: "sensor",startSensor: true)
+            }else{
+                self.detectMagnometerReading()
+            }
         }
     }
     
@@ -354,14 +396,21 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
         self.navigationController?.pushViewController(vc, animated: true)
     }
     
-    func sendNotification(title: String,body: String, secondsToShow: Int, startSensor: Bool = false){
+    func sendNotification(title: String,body: String, secondsToShow: Int,category: String, startSensor: Bool = false){
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = UNNotificationSound.default
         
-        let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: TimeInterval(secondsToShow), repeats: false)
-        let request = UNNotificationRequest.init(identifier: "FiveSecond", content: content, trigger: trigger)
+        content.categoryIdentifier = category
+        if #available(iOS 15.0, *) {
+            content.interruptionLevel = .critical
+        } else {
+            // Fallback on earlier versions
+        }
+        
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(secondsToShow), repeats: false)
+        let request = UNNotificationRequest.init(identifier: UUID().uuidString, content: content, trigger: trigger)
         
         let center = UNUserNotificationCenter.current()
         center.add(request) { error in

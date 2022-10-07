@@ -2,7 +2,7 @@
 //  TestViewController.swift
 //  iSense
 //
-//  Created by Ehtisham Badar on 27/08/2022.
+//  Created by Abdullah Javed on 27/08/2022.
 //
 
 import UIKit
@@ -28,6 +28,13 @@ class TestViewController: BaseViewController {
     @IBOutlet weak var magnetDetectView: UIView!
     @IBOutlet weak var phoneHeading: UILabel!
     @IBOutlet weak var magnetHeading: UILabel!
+    @IBOutlet weak var startTestBtn: UIButton!
+    
+    @IBOutlet weak var restartSecondStackView: UIStackView!
+    
+    @IBOutlet weak var restartSecondStackViewBottomConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var restartSecondStackViewTopConstraint: NSLayoutConstraint!
     
     //MARK: - Variables
     
@@ -68,6 +75,21 @@ class TestViewController: BaseViewController {
         super.viewDidLoad()
         
         
+        reinitializeAll()
+        
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        reinitializeAll()
+    }
+    
+    func reinitializeAll(){
+        
+        
+        magnetDetections.removeAll()
+        tiltDetections.removeAll()
+        
         notificationMessage = UserDefaults.standard.string(forKey: "notification_message") ?? ""
         tiltNotificationMessage = UserDefaults.standard.string(forKey: "movement_message") ?? ""
         magnetNotificationMessage = UserDefaults.standard.string(forKey: "magnet_message") ?? ""
@@ -87,12 +109,49 @@ class TestViewController: BaseViewController {
         magnetInitial = Int(UserDefaults.standard.string(forKey: "magnet_initial")  ?? "0") ?? 0
         magnetFinal = Int(UserDefaults.standard.string(forKey: "magnet_final")  ?? "0") ?? 0
         
+        if (Int(updateInterval) ?? 0 == 0){
+            restartSecondStackView.isHidden = true
+            restartSecondStackViewTopConstraint.constant = 0
+            restartSecondStackViewBottomConstraint.constant = 0
+        }
+        
         
         lblMagnetDetection.text = "\(magnetInitial)-\(magnetFinal) NOT DETECTED"
         lblTiltDetection.text = "\(tiltInitial)-\(tiltFinal) NOT DETECTED"
-    }
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
+        
+        self.magnetDetectView.backgroundColor =  UIColor.noDetectRedColor
+        self.lblMagnetDetection.textColor = UIColor.noDetectTextColor
+        self.magnetHeading.textColor =  UIColor.noDetectTextColor
+
+        self.phoneMovementView.backgroundColor =  UIColor.noDetectRedColor
+        self.lblTiltDetection.textColor =  UIColor.noDetectTextColor
+        self.phoneHeading.textColor =  UIColor.noDetectTextColor
+        
+        if !is_magnet_on {
+            magnetDetectView.backgroundColor = UIColor.disabledColor
+            lblMagnetDetection.textColor = UIColor.hexStringToUIColor(hex: "7c7c7c")
+            magnetHeading.textColor = UIColor.hexStringToUIColor(hex: "7c7c7c")
+        }
+        
+        if !is_movement_on {
+            phoneMovementView.backgroundColor = UIColor.disabledColor
+            lblTiltDetection.textColor = UIColor.hexStringToUIColor(hex: "7c7c7c")
+            phoneHeading.textColor = UIColor.hexStringToUIColor(hex: "7c7c7c")
+        }
+        
+        self.lblMagnet.text = "0"
+        self.lblTilt.text = "0"
+        
+        self.lblMagnetAverage.text = "0"
+        self.lblMagnetHighest.text = "0"
+        self.lblMagnetLowest.text = "0"
+        
+        self.lblTiltAverage.text = "0"
+        self.lblTiltHighest.text = "0"
+        self.lblTiltLowest.text = "0"
+        
+        magnetDetected = false
+        tiltDetected = false
     }
     
     //MARK: - Private Functions
@@ -100,12 +159,18 @@ class TestViewController: BaseViewController {
     private func detectMagnometerReading(){
         
         if motionManager.isDeviceMotionAvailable{
+            DispatchQueue.main.async {
+                self.startTestBtn.setTitle("CANCEL", for: .normal)
+                self.startTestBtn.setTitleColor(UIColor.hexStringToUIColor(hex: "#C6AC63"), for: .normal)
+                self.startTestBtn.isEnabled = true
+            }
+
             motionManager.magnetometerUpdateInterval = 0.1
             motionManager.deviceMotionUpdateInterval = 0.1
                                                         
             motionManager.startDeviceMotionUpdates(using: .xArbitraryCorrectedZVertical,to: .main) { [self] motion, error in
                 if let motion = motion {
-                    print(motion)
+//                    print(motion)
                     let _ = motion.magneticField.accuracy
                     let x = motion.magneticField.field.x
                     let y = motion.magneticField.field.y
@@ -119,7 +184,6 @@ class TestViewController: BaseViewController {
                     
                     let teslaXYZd = Int(round(sqrt((xm*xm)+(ym*ym)+(zm*zm))))
                     
-                    self.lblMagnet.text = "\(teslaXYZ)"
                     
                     let tiltForwardBackward = Double(acosf(Float(Double(zm)/Double(teslaXYZd)))) * 180.0 / .pi - 90.0;
 
@@ -135,6 +199,14 @@ class TestViewController: BaseViewController {
                         }
                         
                        checkIfPhoneDetection()
+                        
+                        if(self.tiltDetections.count > 0){
+                            self.lblTiltAverage.text = "\(Int(self.tiltDetections.reduce(0, +) / self.tiltDetections.count))"
+                        }
+                        
+                        self.lblTiltLowest.text = "\(String(describing: self.tiltDetections.min() ?? 0))"
+                        
+                        self.lblTiltHighest.text = "\(String(describing: self.tiltDetections.max() ?? 0))"
                     }
                     
                     if is_magnet_on && !magnetDetected {
@@ -143,33 +215,48 @@ class TestViewController: BaseViewController {
                         }
                         
                         if self.magnetDetections.count >= 2 {
-                            let value = (self.magnetDetections[self.magnetDetections.count - 1] - self.magnetDetections[self.magnetDetections.count - 2])
-                            if (value >= magnetInitial &&  value <= magnetFinal)  {
+                            let average = Int(self.magnetDetections.reduce(0, +) / self.magnetDetections.count)
+                            let highest = self.magnetDetections.max() ?? 0
+                            let lowest =  self.magnetDetections.min() ?? 0
+                            let value1 = average > highest ? average - highest : average > lowest ? average - lowest : 0
+                            let value2 = average < highest ? highest - average : average < lowest ? lowest - average : 0
+                            
+                            if ((value1 >= magnetInitial &&  value1 <= magnetFinal) || (value2 >= magnetInitial &&  value2 <= magnetFinal))  {
                                 
-                                is_magnet_on = false
-                                 
-                                magnetDetected = true
-                                                                 
-                                timerTiltDetection = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(checkForPhoneDetection), userInfo: nil, repeats: true)
+                                if (is_movement_on){
+                                    is_magnet_on = false
+                                     
+                                    magnetDetected = true
+                                    
+                                    tiltDetected = false
+                                                                     
+                                    timerTiltDetection = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(checkForPhoneDetection), userInfo: nil, repeats: true)
+                                }else{
+                                    sendNotification(title: magnetNotificationMessage, body: "Magnet detected", secondsToShow: Int(wait_between_notifications) ?? 0, category: "magnet")
+                                    
+                                    lblMagnetDetection.text = "\(magnetInitial)-\(magnetFinal) DETECTED"
+                                    magnetDetectView.backgroundColor = UIColor.greenColor
+                                    lblMagnetDetection.textColor = UIColor.greenDetectColor
+                                    magnetHeading.textColor = UIColor.greenDetectColor
+
+                                    
+                                    motionManager.stopMagnetometerUpdates()
+                                    motionManager.stopDeviceMotionUpdates()
+                                    
+                                    startTestBtn.setTitle("RESTART", for: .normal)
+                                    startTestBtn.isEnabled = true
+                                }
                             }
                         }
                         
-                    }
-
-                    self.lblTiltAverage.text = "\(Int(self.tiltDetections.reduce(0, +) / self.tiltDetections.count))"
-                    self.lblMagnetAverage.text = "\(Int(self.magnetDetections.reduce(0, +) / self.magnetDetections.count))"
-                    
-                    self.lblMagnetLowest.text = "\(String(describing: self.magnetDetections.min() ?? 0))"
-                    self.lblTiltLowest.text = "\(String(describing: self.tiltDetections.min() ?? 0))"
-                    
-                    self.lblMagnetHighest.text = "\(String(describing: self.magnetDetections.max() ?? 0))"
-                    self.lblTiltHighest.text = "\(String(describing: self.tiltDetections.max() ?? 0))"
-                    
-                    if !is_magnet_on {
-                        motionManager.stopMagnetometerUpdates()
-                    }
-                    if !is_movement_on {
-                        motionManager.stopDeviceMotionUpdates()
+                        if(self.magnetDetections.count > 0){
+                            self.lblMagnetAverage.text = "\(Int(self.magnetDetections.reduce(0, +) / self.magnetDetections.count))"
+                        }
+                        
+                        self.lblMagnetHighest.text = "\(String(describing: self.magnetDetections.max() ?? 0))"
+                        self.lblMagnetLowest.text = "\(String(describing: self.magnetDetections.min() ?? 0))"
+                        
+                        self.lblMagnet.text = "\(teslaXYZ)"
                     }
                     
                 }
@@ -184,31 +271,38 @@ class TestViewController: BaseViewController {
         if(Int(countTiltDetection) > 0) {
             countTiltDetection = countTiltDetection - 1
         }else{
-            timerTiltDetection.invalidate()
-            sendNotification(title: "Magnet detected", body: magnetNotificationMessage, secondsToShow: Int(wait_between_notifications) ?? 0)
-            
-            lblMagnetDetection.text = "\(magnetInitial)-\(magnetFinal) DETECTED"
-            magnetDetectView.backgroundColor = UIColor.greenColor
-            lblMagnetDetection.textColor = UIColor.greenDetectColor
-            magnetHeading.textColor = UIColor.greenDetectColor
+            if(!tiltDetected){
+                timerTiltDetection.invalidate()
+                sendNotification(title: magnetNotificationMessage, body: "Magnet detected", secondsToShow: Int(wait_between_notifications) ?? 0, category: "magnet")
+                
+                lblMagnetDetection.text = "\(magnetInitial)-\(magnetFinal) DETECTED"
+                magnetDetectView.backgroundColor = UIColor.greenColor
+                lblMagnetDetection.textColor = UIColor.greenDetectColor
+                magnetHeading.textColor = UIColor.greenDetectColor
 
-            let time = Double(wait_between_notifications) ?? 1.0
-            DispatchQueue.main.asyncAfter(deadline: .now() + time) { [self] in
-                magnetDetected = false
+                let time = Double(wait_between_notifications) ?? 1.0
+                tiltDetected = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + time) { [self] in
+                    tiltDetected = false
+                }
             }
         }
     }
     
     func checkIfPhoneDetection(){
         
-        if magnetDetected {
+        if tiltDetected {
             return
         }
     
         if self.tiltDetections.count >= 2 {
-            let value = (self.tiltDetections[self.tiltDetections.count - 1] - self.tiltDetections[self.tiltDetections.count - 2])
-            if (value >= tiltInitial &&  value <= tiltFinal)  {
-                sendNotification(title: "Phone Movement detected", body: tiltNotificationMessage, secondsToShow: Int(wait_between_notifications) ?? 0)
+            let average = Int(self.tiltDetections.reduce(0, +) / self.tiltDetections.count)
+            let highest = self.tiltDetections.max() ?? 0
+            let lowest =  self.tiltDetections.min() ?? 0
+            let value1 = average > highest ? average - highest : average > lowest ? average - lowest : 0
+            let value2 = average < highest ? highest - average : average < lowest ? lowest - average : 0
+            if ((value1 >= tiltInitial &&  value1 <= tiltFinal) || (value2 >= tiltInitial &&  value2 <= tiltFinal))  {
+                sendNotification(title: tiltNotificationMessage, body: "Phone Movement detected", secondsToShow: Int(wait_between_notifications) ?? 0, category: "movement")
                 motionManager.stopMagnetometerUpdates()
                 motionManager.stopDeviceMotionUpdates()
                 
@@ -217,7 +311,10 @@ class TestViewController: BaseViewController {
                 lblTiltDetection.textColor = UIColor.greenDetectColor
                 phoneHeading.textColor = UIColor.greenDetectColor
                 
-                magnetDetected = false
+                startTestBtn.setTitle("RESTART", for: .normal)
+                startTestBtn.isEnabled = true
+                
+                tiltDetected = true
             }
         }
     }
@@ -228,8 +325,8 @@ class TestViewController: BaseViewController {
             
             let xr = CGFloat(-attitude.pitch * 2 / .pi)
             let yr = CGFloat(round(-((180 / Double.pi) * attitude.pitch) * 10)/10)
-            print("Y: " + String(describing: yr))
-            print("X: " + String(describing: xr))
+//            print("Y: " + String(describing: yr))
+//            print("X: " + String(describing: xr))
             let angle = atan2(yr, xr) + (.pi / 2)
             let angleDegrees = angle * 180.0 / .pi
             
@@ -245,15 +342,40 @@ class TestViewController: BaseViewController {
         self.navigationController?.popViewController(animated: true)
     }
     @IBAction func startTestBtnPressed(_ sender: Any) {
-        timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
+        
+        count = Int(updateInterval) ?? 0
+        timer.invalidate()
+        startTestBtn.isEnabled = false
+        reinitializeAll()
+        
+        if startTestBtn.title(for: .normal) ?? "" == "CANCEL" {
+            startTestBtn.setTitle("START TEST", for: .normal)
+            motionManager.stopMagnetometerUpdates()
+            motionManager.stopDeviceMotionUpdates()
+            startTestBtn.setTitle("START TEST", for: .normal)
+            startTestBtn.isEnabled = true
+        }else {
+            motionManager.stopMagnetometerUpdates()
+            motionManager.stopDeviceMotionUpdates()
+            
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
+            
+            startTestBtn.setTitle("START TEST", for: .normal)
+            startTestBtn.setTitleColor(UIColor.hexStringToUIColor(hex: "#C6AC63",alpha: 0.2), for: .normal)
+        }
     }
     @objc func update() {
         if(Int(count) > 0) {
             count = count - 1
             lblStartTime.text = String(count)
         }else{
+            count = Int(updateInterval) ?? 0
             timer.invalidate()
-            sendNotification(title: "Sensor Started", body: notificationMessage, secondsToShow: Int(wait_between_notifications) ?? 0,startSensor: true)
+            if(is_notification_on) {
+                sendNotification(title: notificationMessage, body: "Sensor Started", secondsToShow: 1, category: "sensor",startSensor: true)
+            }else{
+                self.detectMagnometerReading()
+            }
         }
     }
     
@@ -265,16 +387,23 @@ class TestViewController: BaseViewController {
         motionManager.stopMagnetometerUpdates()
         motionManager.stopDeviceMotionUpdates()
         
+        
     }
     
-    func sendNotification(title: String,body: String, secondsToShow: Int, startSensor: Bool = false){
+    func sendNotification(title: String,body: String, secondsToShow: Int,category: String, startSensor: Bool = false){
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = UNNotificationSound.default
-        
-        let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: TimeInterval(secondsToShow), repeats: false)
-        let request = UNNotificationRequest.init(identifier: "FiveSecond", content: content, trigger: trigger)
+        content.categoryIdentifier = category
+        if #available(iOS 15.0, *) {
+            content.interruptionLevel = .critical
+        } else {
+            // Fallback on earlier versions
+        }
+                
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: TimeInterval(secondsToShow), repeats: false)
+        let request = UNNotificationRequest.init(identifier: UUID().uuidString, content: content, trigger: trigger)
         
         let center = UNUserNotificationCenter.current()
         center.add(request) { error in

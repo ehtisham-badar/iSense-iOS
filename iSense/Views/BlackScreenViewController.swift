@@ -2,7 +2,7 @@
 //  BlackScreenViewController.swift
 //  iSense
 //
-//  Created by Ehtisham Badar on 03/09/2022.
+//  Created by  Abdullah Javed on 03/09/2022.
 //
 
 import UIKit
@@ -30,6 +30,10 @@ class BlackScreenViewController: UIViewController {
         setNeedsUpdateOfHomeIndicatorAutoHidden()
     }
     
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
     
     func addGesture(){
         let tap = UISwipeGestureRecognizer(target: self, action: #selector(dismissView))
@@ -45,7 +49,7 @@ class BlackScreenViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
-//        NotificationCenter.default.post(name: Notification.Name("stopSensor"), object: nil)
+        NotificationCenter.default.post(name: Notification.Name("stopSensor"), object: nil)
         
     }
 }
