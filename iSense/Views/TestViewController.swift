@@ -49,24 +49,33 @@ class TestViewController: BaseViewController {
     var tiltInitial = 0
     var tiltFinal = 0
     var timer = Timer()
+    var restartTimer = Timer()
     var timerTiltDetection = Timer()
     var count = 0
+    var countRestart = 0
     var countTiltDetection = 0
     
     var notificationMessage = ""
     var tiltNotificationMessage = ""
     var magnetNotificationMessage = ""
+    var restartNotificationMessage = ""
     var confirmationSeconds = 0
+    var restart_seconds = 0
     
     var is_notification_on = false
     var is_movement_on = false
     var is_magnet_on = false
+    var is_restart_notify_on = false
     
     var range_confirm = "0"
     var wait_between_notifications = "0"
     
     var magnetDetected = false
     var tiltDetected = false
+    
+    var is_restart_on_off = false
+    
+    @IBOutlet weak var lblRestartTimer: UILabel!
     
     
     //MARK: - Load View
@@ -93,6 +102,16 @@ class TestViewController: BaseViewController {
         notificationMessage = UserDefaults.standard.string(forKey: "notification_message") ?? ""
         tiltNotificationMessage = UserDefaults.standard.string(forKey: "movement_message") ?? ""
         magnetNotificationMessage = UserDefaults.standard.string(forKey: "magnet_message") ?? ""
+        restartNotificationMessage = UserDefaults.standard.string(forKey: "restart_message") ?? ""
+        
+        is_restart_notify_on = UserDefaults.standard.bool(forKey: "is_restart_on_notification")
+        
+        is_restart_on_off = UserDefaults.standard.bool(forKey: "is_restart_on")
+        
+        let seconds = UserDefaults.standard.string(forKey: "restart_seconds") ?? "0"
+        restart_seconds = Int(seconds) ?? 0
+        
+        countRestart = restart_seconds
         
         is_notification_on = UserDefaults.standard.bool(forKey: "is_notification_on")
         is_movement_on = UserDefaults.standard.bool(forKey: "is_movement_on")
@@ -109,11 +128,13 @@ class TestViewController: BaseViewController {
         magnetInitial = Int(UserDefaults.standard.string(forKey: "magnet_initial")  ?? "0") ?? 0
         magnetFinal = Int(UserDefaults.standard.string(forKey: "magnet_final")  ?? "0") ?? 0
         
-        if (Int(updateInterval) ?? 0 == 0){
+        if (Int(restart_seconds) == 0 || !is_restart_on_off){
             restartSecondStackView.isHidden = true
-            restartSecondStackViewTopConstraint.constant = 0
-            restartSecondStackViewBottomConstraint.constant = 0
+            restartSecondStackViewTopConstraint.constant = 10
+            restartSecondStackViewBottomConstraint.constant = 10
         }
+        
+        lblRestartTimer.text = String(countRestart)
         
         
         lblMagnetDetection.text = "\(magnetInitial)-\(magnetFinal) NOT DETECTED"
@@ -198,7 +219,7 @@ class TestViewController: BaseViewController {
                             }
                         }
                         
-                       checkIfPhoneDetection()
+                        checkIfPhoneDetection()
                         
                         if(self.tiltDetections.count > 0){
                             self.lblTiltAverage.text = "\(Int(self.tiltDetections.reduce(0, +) / self.tiltDetections.count))"
@@ -245,6 +266,10 @@ class TestViewController: BaseViewController {
                                     
                                     startTestBtn.setTitle("RESTART", for: .normal)
                                     startTestBtn.isEnabled = true
+                                    
+                                    if (is_restart_on_off) {
+                                        restartTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateRestart), userInfo: nil, repeats: true)
+                                    }
                                 }
                             }
                         }
@@ -315,6 +340,10 @@ class TestViewController: BaseViewController {
                 startTestBtn.isEnabled = true
                 
                 tiltDetected = true
+                                
+                if (is_restart_on_off) {
+                    restartTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateRestart), userInfo: nil, repeats: true)
+                }
             }
         }
     }
@@ -336,11 +365,31 @@ class TestViewController: BaseViewController {
         return 0.0
     }
     
+    
+    func cancelBtnOption(){
+        startTestBtn.setTitle("START TEST", for: .normal)
+        motionManager.stopMagnetometerUpdates()
+        motionManager.stopDeviceMotionUpdates()
+        startTestBtn.setTitle("START TEST", for: .normal)
+        startTestBtn.isEnabled = true
+    }
+    
+    func startBtnOption(){
+        count = Int(updateInterval) ?? 0
+        timer.invalidate()
+        startTestBtn.isEnabled = false
+        reinitializeAll()
+        
+        startTestBtn.setTitle("START TEST", for: .normal)
+        startTestBtn.setTitleColor(UIColor.hexStringToUIColor(hex: "#C6AC63",alpha: 0.2), for: .normal)
+    }
+    
     //MARK: - IBActions
     
     @IBAction func didPressBackBtn(_ sender: Any) {
         self.navigationController?.popViewController(animated: true)
     }
+    
     @IBAction func startTestBtnPressed(_ sender: Any) {
         
         count = Int(updateInterval) ?? 0
@@ -349,19 +398,30 @@ class TestViewController: BaseViewController {
         reinitializeAll()
         
         if startTestBtn.title(for: .normal) ?? "" == "CANCEL" {
-            startTestBtn.setTitle("START TEST", for: .normal)
-            motionManager.stopMagnetometerUpdates()
-            motionManager.stopDeviceMotionUpdates()
-            startTestBtn.setTitle("START TEST", for: .normal)
-            startTestBtn.isEnabled = true
+            cancelBtnOption()
         }else {
             motionManager.stopMagnetometerUpdates()
             motionManager.stopDeviceMotionUpdates()
             
-            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
+//            if(is_restart_on_off){
+//                if(startTestBtn.title(for: .normal) == "RESTART"){
+//                    timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateRestart), userInfo: nil, repeats: true)
+//                }else{
+//                    timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
+//                }
+//            }else{
+//                timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
+//            }
             
-            startTestBtn.setTitle("START TEST", for: .normal)
-            startTestBtn.setTitleColor(UIColor.hexStringToUIColor(hex: "#C6AC63",alpha: 0.2), for: .normal)
+            if(startTestBtn.title(for: .normal) == "RESTART"){
+                restartTimer.invalidate()
+                lblRestartTimer.text = String(countRestart)
+            }else{
+                startTestBtn.setTitle("START TEST", for: .normal)
+                startTestBtn.setTitleColor(UIColor.hexStringToUIColor(hex: "#C6AC63",alpha: 0.2), for: .normal)
+            }
+            
+            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
         }
     }
     @objc func update() {
@@ -379,15 +439,30 @@ class TestViewController: BaseViewController {
         }
     }
     
+    @objc func updateRestart() {
+        if(Int(countRestart) > 0) {
+            countRestart = countRestart - 1
+            lblRestartTimer.text = String(countRestart)
+        }else{
+            reinitializeAll()
+            countRestart = restart_seconds
+            restartTimer.invalidate()
+            if(is_restart_notify_on) {
+                sendNotification(title: restartNotificationMessage, body: "Sensor Restarted", secondsToShow: 1, category: "sensor",startSensor: true)
+            }else{
+                self.detectMagnometerReading()
+            }
+        }
+    }
+    
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         
         timer.invalidate()
+        restartTimer.invalidate()
         
         motionManager.stopMagnetometerUpdates()
         motionManager.stopDeviceMotionUpdates()
-        
-        
     }
     
     func sendNotification(title: String,body: String, secondsToShow: Int,category: String, startSensor: Bool = false){

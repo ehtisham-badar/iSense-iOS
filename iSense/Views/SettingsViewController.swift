@@ -39,12 +39,29 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var magnetSensorBackView: UIView!
     @IBOutlet weak var magnetSensorSwitchView: UIView!
     @IBOutlet weak var magnetSideConstraint: NSLayoutConstraint!
+    
+    
+    @IBOutlet weak var restartMessageTF: UITextField!
+    @IBOutlet weak var restartSensorSeconds: UITextField!
+    
+    
+    @IBOutlet weak var restartSideConstraint: NSLayoutConstraint!
+    @IBOutlet weak var highetOfRestartView: NSLayoutConstraint!
+    
+    @IBOutlet weak var restartNotificationBackView: UIView!
+    @IBOutlet weak var restartSwitchView: UIView!
     //MARK: - Variables
     
     private var isNotificationOn: Bool = true
+    private var isRestartOn: Bool = true
     private var isMovementOn: Bool = true
     private var isMagnetOn: Bool = true
+    private var isRestartOnOff: Bool = true
     
+    
+    @IBOutlet weak var restartOnOffSideConstraint: NSLayoutConstraint!
+    @IBOutlet weak var restartOnOffBackView: UIView!
+    @IBOutlet weak var restartOnOffSwitchView: UIView!
     
     //MARK: - Load View
     
@@ -62,6 +79,8 @@ class SettingsViewController: UIViewController {
         magnetSideConstraint.constant = 50
         
         let seconds = UserDefaults.standard.string(forKey: "seconds")
+        let restart_seconds = UserDefaults.standard.string(forKey: "restart_seconds")
+
         let tilt_initial = UserDefaults.standard.string(forKey: "tilt_initial")
         let tilt_final = UserDefaults.standard.string(forKey: "tilt_final")
         let magnet_initial = UserDefaults.standard.string(forKey: "magnet_initial")
@@ -74,6 +93,10 @@ class SettingsViewController: UIViewController {
         let movement_message = UserDefaults.standard.string(forKey: "movement_message")
         let magnet_message = UserDefaults.standard.string(forKey: "magnet_message")
         
+        let restart_message = UserDefaults.standard.string(forKey: "restart_message")
+        
+        let is_restart_on_off = UserDefaults.standard.bool(forKey: "is_restart_on")
+                        
         secondsTF.text = seconds
         tiltInitialValueTF.text = tilt_initial
         tiltFinalValueTF.text = tilt_final
@@ -83,52 +106,73 @@ class SettingsViewController: UIViewController {
         waitTF.text = wait
         notificationTF.text = after_notification
         
+        restartSensorSeconds.text = restart_seconds
+        
         notificationMessageTF.text = notification_message
         movementMessageTF.text = movement_message
         magnetMessageTF.text = magnet_message
+        
+        restartMessageTF.text = restart_message
         
         let isNotificationOn = UserDefaults.standard.bool(forKey: "is_notification_on")
         let isMovementOn = UserDefaults.standard.bool(forKey: "is_movement_on")
         let isMagnetOn = UserDefaults.standard.bool(forKey: "is_magnet_on")
         
+        let isRestartOn = UserDefaults.standard.bool(forKey: "is_restart_on_notification")
+        
         notificationSideConstraint.constant = (!isNotificationOn) ? 50 : 0
         heightOfNotificationView.constant = isNotificationOn ? 430 : 270
-//        mainHeightConstraint.constant = isNotificationOn ? mainHeightConstraint.constant+200 : mainHeightConstraint.constant-160
+        mainHeightConstraint.constant = isNotificationOn ? mainHeightConstraint.constant+70 : mainHeightConstraint.constant-160
         notiSensorBackView.backgroundColor = isNotificationOn ? UIColor.color1 : UIColor.red2
         notiSensorSwitchView.backgroundColor = isNotificationOn ? UIColor.color2 : UIColor.red1
+        
+        
+        restartSideConstraint.constant = (!isRestartOn) ? 50 : 0
+        highetOfRestartView.constant = isRestartOn ? 460 : 335
+        mainHeightConstraint.constant = isNotificationOn ? mainHeightConstraint.constant+70 : mainHeightConstraint.constant-160
+        restartNotificationBackView.backgroundColor = isRestartOn ? UIColor.color1 : UIColor.red2
+        restartSwitchView.backgroundColor = isRestartOn ? UIColor.color2 : UIColor.red1
+        
         
 //        movementSensorImage.image = (!isMovementOn) ? UIImage.sensorOff : UIImage.sensorOn
         tileSideConstraint.constant = (!isMovementOn) ? 50 : 0
         heightOfMovementView.constant = isMovementOn ? 380 : 220
-//        mainHeightConstraint.constant = isMovementOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+        mainHeightConstraint.constant = isMovementOn ? mainHeightConstraint.constant+70 : mainHeightConstraint.constant-100
         tiltSensorBackView.backgroundColor = isMovementOn ? UIColor.color1 : UIColor.red2
         tileSensorSwitchView.backgroundColor = isMovementOn ? UIColor.color2 : UIColor.red1
         
         magnetSideConstraint.constant = (!isMagnetOn) ? 50 : 0
         magnetSensorImage.image = (!isMagnetOn) ? UIImage.sensorOff : UIImage.sensorOn
         heightOfTiltView.constant = isMagnetOn ? 380 : 220
-//        mainHeightConstraint.constant = isMagnetOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+        mainHeightConstraint.constant = isMagnetOn ? mainHeightConstraint.constant+70 : mainHeightConstraint.constant-100
         magnetSensorBackView.backgroundColor = isMagnetOn ? UIColor.color1 : UIColor.red2
         magnetSensorSwitchView.backgroundColor = isMagnetOn ? UIColor.color2 : UIColor.red1
-        if isNotificationOn && isMovementOn && isMagnetOn{
-            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160 + 160
-        }else if isNotificationOn && isMovementOn && !isMagnetOn{
-            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160
-        }else if isNotificationOn && !isMovementOn && !isMagnetOn{
-            mainHeightConstraint.constant = mainHeightConstraint.constant + 160
-        }else if !isNotificationOn && !isMovementOn && isMagnetOn{
-            mainHeightConstraint.constant = mainHeightConstraint.constant + 160
-        }else if !isNotificationOn && isMovementOn && !isMagnetOn{
-            mainHeightConstraint.constant = mainHeightConstraint.constant + 160
-        }else if isNotificationOn && !isMovementOn && isMagnetOn{
-            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160
-        }else if !isNotificationOn && isMovementOn && isMagnetOn{
-            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160
-        }else if !isNotificationOn && !isMovementOn && !isMagnetOn{
-            mainHeightConstraint.constant = mainHeightConstraint.constant
-        }
+        
+        restartOnOffSideConstraint.constant = (!is_restart_on_off) ? 50 : 0
+//        magnetSensorImage.image = (!is_restart_on_off) ? UIImage.sensorOff : UIImage.sensorOn
+        mainHeightConstraint.constant = isMagnetOn ? mainHeightConstraint.constant+70 : mainHeightConstraint.constant-100
+        restartOnOffBackView.backgroundColor = is_restart_on_off ? UIColor.color1 : UIColor.red2
+        restartOnOffSwitchView.backgroundColor = is_restart_on_off ? UIColor.color2 : UIColor.red1
+        
+        
+//        if isNotificationOn && isMovementOn && isMagnetOn{
+//            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160 + 160
+//        }else if isNotificationOn && isMovementOn && !isMagnetOn{
+//            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160
+//        }else if isNotificationOn && !isMovementOn && !isMagnetOn{
+//            mainHeightConstraint.constant = mainHeightConstraint.constant + 160
+//        }else if !isNotificationOn && !isMovementOn && isMagnetOn{
+//            mainHeightConstraint.constant = mainHeightConstraint.constant + 160
+//        }else if !isNotificationOn && isMovementOn && !isMagnetOn{
+//            mainHeightConstraint.constant = mainHeightConstraint.constant + 160
+//        }else if isNotificationOn && !isMovementOn && isMagnetOn{
+//            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160
+//        }else if !isNotificationOn && isMovementOn && isMagnetOn{
+//            mainHeightConstraint.constant = mainHeightConstraint.constant + 160 + 160
+//        }else if !isNotificationOn && !isMovementOn && !isMagnetOn{
+//            mainHeightConstraint.constant = mainHeightConstraint.constant
+//        }
     }
-    
     
     func addGestureToDismissKeyboard(){
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(
@@ -153,6 +197,10 @@ class SettingsViewController: UIViewController {
             UserDefaults.standard.set(notificationMessageTF.text ?? "", forKey: "notification_message")
             UserDefaults.standard.set(movementMessageTF.text ?? "", forKey: "movement_message")
             UserDefaults.standard.set(magnetMessageTF.text ?? "", forKey: "magnet_message")
+                        
+            UserDefaults.standard.set(restartMessageTF.text ?? "", forKey: "restart_message")
+            
+            UserDefaults.standard.set(restartSensorSeconds.text ?? "", forKey: "restart_seconds")
         }
         view.endEditing(true)
     }
@@ -174,6 +222,30 @@ class SettingsViewController: UIViewController {
         mainHeightConstraint.constant = isNotificationOn ? mainHeightConstraint.constant+200 : mainHeightConstraint.constant-160
         notiSensorBackView.backgroundColor = isNotificationOn ? UIColor.color1 : UIColor.red2
         notiSensorSwitchView.backgroundColor = isNotificationOn ? UIColor.color2 : UIColor.red1
+    }
+    
+    @IBAction func restartOnOffBtnPressed(_ sender: Any) {
+        UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+            self.restartOnOffSideConstraint.constant = (self.restartOnOffSideConstraint.constant == 0) ? 50 : 0
+            self.view.layoutIfNeeded()
+        }
+        isRestartOnOff = (restartOnOffSideConstraint.constant == 0) ? true : false
+        UserDefaults.standard.set(isRestartOnOff, forKey: "is_restart_on")
+        restartOnOffBackView.backgroundColor = isRestartOnOff ? UIColor.color1 : UIColor.red2
+        restartOnOffSwitchView.backgroundColor = isRestartOnOff ? UIColor.color2 : UIColor.red1
+    }
+    
+    @IBAction func getRestartBtnPressed(_ sender: Any) {
+        UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+            self.restartSideConstraint.constant = (self.restartSideConstraint.constant == 0) ? 50 : 0
+            self.view.layoutIfNeeded()
+        }
+        isRestartOn = (restartSideConstraint.constant == 0) ? true : false
+        UserDefaults.standard.set(isRestartOn, forKey: "is_restart_on_notification")
+        highetOfRestartView.constant = isRestartOn ? 460 : 335
+        mainHeightConstraint.constant = isRestartOn ? mainHeightConstraint.constant+200 : mainHeightConstraint.constant-160
+        restartNotificationBackView.backgroundColor = isRestartOn ? UIColor.color1 : UIColor.red2
+        restartSwitchView.backgroundColor = isRestartOn ? UIColor.color2 : UIColor.red1
     }
     
     @IBAction func movementBtnPressed(_ sender: Any) {

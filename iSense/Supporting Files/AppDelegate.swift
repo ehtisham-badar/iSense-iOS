@@ -40,7 +40,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate,UNUserNotificationCenterDe
             UserDefaults.standard.set(true, forKey: "is_notification_on")
             UserDefaults.standard.set(true, forKey: "is_movement_on")
             UserDefaults.standard.set(true, forKey: "is_magnet_on")
+            
+            UserDefaults.standard.set("Restart", forKey: "restart_message")
+            
+            UserDefaults.standard.set(true, forKey: "is_restart_on_notification")
+            
+            UserDefaults.standard.set(false, forKey: "is_restart_on")
+            
+            UserDefaults.standard.set("2", forKey: "restart_seconds")
         }
+        
+        UIApplication.shared.isIdleTimerDisabled = true
         
         return true
     }

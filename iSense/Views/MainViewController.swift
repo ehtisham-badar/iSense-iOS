@@ -36,18 +36,23 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
     var tiltInitial = 0
     var tiltFinal = 0
     var timer = Timer()
+    var restartTimer = Timer()
     var timerTiltDetection = Timer()
     var count = 0
+    var countRestart = 0
     var countTiltDetection = 0
     
     var notificationMessage = ""
     var tiltNotificationMessage = ""
     var magnetNotificationMessage = ""
+    var restartNotificationMessage = ""
     var confirmationSeconds = 0
+    var restart_seconds = 0
     
     var is_notification_on = false
     var is_movement_on = false
     var is_magnet_on = false
+    var is_restart_notify_on = false
     
     var range_confirm = "0"
     var wait_between_notifications = "0"
@@ -56,12 +61,16 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
     
     var magnetDetected = false
     var tiltDetected = false
+    
+    var is_restart_on_off = false
+    
+    var isSensorCanBeClicked = true
+    
 
     //MARK: - Load View
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        
         setNeedsUpdateOfHomeIndicatorAutoHidden()
     }
     
@@ -83,6 +92,17 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
         notificationMessage = UserDefaults.standard.string(forKey: "notification_message") ?? ""
         tiltNotificationMessage = UserDefaults.standard.string(forKey: "movement_message") ?? ""
         magnetNotificationMessage = UserDefaults.standard.string(forKey: "magnet_message") ?? ""
+        
+        restartNotificationMessage = UserDefaults.standard.string(forKey: "restart_message") ?? ""
+        
+        is_restart_notify_on = UserDefaults.standard.bool(forKey: "is_restart_on_notification")
+        
+        is_restart_on_off = UserDefaults.standard.bool(forKey: "is_restart_on")
+        
+        let seconds = UserDefaults.standard.string(forKey: "restart_seconds") ?? "0"
+        restart_seconds = Int(seconds) ?? 0
+        
+        countRestart = restart_seconds
         
         is_notification_on = UserDefaults.standard.bool(forKey: "is_notification_on")
         is_movement_on = UserDefaults.standard.bool(forKey: "is_movement_on")
@@ -110,6 +130,9 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
         super.viewWillAppear(animated)
         NotificationCenter.default.addObserver(forName: Notification.Name("stopSensor"), object: nil, queue: .main) { notification in
             self.stopSensor()
+            
+            self.restartTimer.invalidate()
+            self.timer.invalidate()
         }
         
         tiltDetections.removeAll()
@@ -134,6 +157,7 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
                 self.view.layoutIfNeeded()
                 
                 timer.invalidate()
+                
                 motionManager.stopDeviceMotionUpdates()
                 motionManager.stopMagnetometerUpdates()
                 
@@ -208,7 +232,9 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
                                     
                                     stopSensor()
                                     
-                                    sensorOnOffMethod()
+                                    if is_restart_on_off {
+                                        sensorOnOffMethod(showBlackScreen: false)
+                                    }
                                 }
                             }
                         }
@@ -243,7 +269,10 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
                 
                 stopSensor()
                 
-                sensorOnOffMethod()
+                if is_restart_on_off {
+                    sensorOnOffMethod(showBlackScreen: false)
+                }
+
             }
         }
     }
@@ -324,7 +353,7 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
     //MARK: - IBActions
     
     @IBAction func didPressSensorOnOffBtn(_ sender: Any) {
-        sensorOnOffMethod()
+        sensorOnOffMethod(showBlackScreen: true)
     }
     
     @IBAction func didPressVideosButton(_ sender: Any) {
@@ -339,36 +368,49 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
         }
     }
     
-    func sensorOnOffMethod(){
-        guard updateInterval != "no seconds saved" else{
-            showAlert()
-            return
-        }
-        UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
-            self.sideConstraintForSwitch.constant = (self.sideConstraintForSwitch.constant == 100) ? 0 : 100
-            self.view.layoutIfNeeded()
-        } completion: { animationDone in
-            DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-                if self.isSensorOn{
-//                    self.presentBlackScreen()
-                }
-            }
-        }
-        isSensorOn = (sideConstraintForSwitch.constant == 0) ? true : false
-        lblSensor.textColor = isSensorOn ? UIColor.appYellowColor : UIColor.appRedColor
-        lblSensorDesc.textColor = isSensorOn ? UIColor.appRedColor : UIColor.appYellowColor
-        lblSensor.text = isSensorOn ? AppStrings.onSensorText : AppStrings.offSensorText
-        lblSensorDesc.text = isSensorOn ? AppStrings.offSensorDesc : AppStrings.onSensorDesc
-        backSensorView.backgroundColor = isSensorOn ? UIColor.color1 : UIColor.red2
-        switchSensor.backgroundColor = isSensorOn ? UIColor.color2 : UIColor.red1
+    func sensorOnOffMethod(showBlackScreen: Bool = true){
         
-        if self.isSensorOn {
-            timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
-        }else{
-            timer.invalidate()
+        if(isSensorCanBeClicked){
+            isSensorCanBeClicked = false
+            guard updateInterval != "no seconds saved" else{
+                showAlert()
+                return
+            }
+            UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+                self.sideConstraintForSwitch.constant = (self.sideConstraintForSwitch.constant == 100) ? 0 : 100
+                self.view.layoutIfNeeded()
+            } completion: { animationDone in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+                    if self.isSensorOn && showBlackScreen{
+                        self.presentBlackScreen()
+                    }
+                }
+                
+                self.isSensorCanBeClicked = true
+            }
             
-            motionManager.stopDeviceMotionUpdates()
-            motionManager.stopMagnetometerUpdates()
+            isSensorOn = (sideConstraintForSwitch.constant == 0) ? true : false
+            lblSensor.textColor = isSensorOn ? UIColor.appYellowColor : UIColor.appRedColor
+            lblSensorDesc.textColor = isSensorOn ? UIColor.appRedColor : UIColor.appYellowColor
+            lblSensor.text = isSensorOn ? AppStrings.onSensorText : AppStrings.offSensorText
+            lblSensorDesc.text = isSensorOn ? AppStrings.offSensorDesc : AppStrings.onSensorDesc
+            backSensorView.backgroundColor = isSensorOn ? UIColor.color1 : UIColor.red2
+            switchSensor.backgroundColor = isSensorOn ? UIColor.color2 : UIColor.red1
+            
+            
+            if(showBlackScreen){
+                if self.isSensorOn {
+                    timer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(update), userInfo: nil, repeats: true)
+                }else{
+                    timer.invalidate()
+                    restartTimer.invalidate()
+                            
+                    motionManager.stopDeviceMotionUpdates()
+                    motionManager.stopMagnetometerUpdates()
+                }
+            }else{
+                restartTimer = Timer.scheduledTimer(timeInterval: 1, target: self, selector: #selector(updateRestart), userInfo: nil, repeats: true)
+            }
         }
     }
     
@@ -385,6 +427,21 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
             }
         }
     }
+    
+    @objc func updateRestart() {
+        if(Int(countRestart) > 0) {
+            countRestart = countRestart - 1
+        }else{
+            countRestart = restart_seconds
+            restartTimer.invalidate()
+            if(is_restart_notify_on) {
+                sendNotification(title: restartNotificationMessage, body: "Sensor Restarted", secondsToShow: 1, category: "sensor",startSensor: true)
+            }else{
+                self.detectMagnometerReading()
+            }
+        }
+    }
+    
     
     @IBAction func didPressSettings(_ sender: Any) {
         let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: SettingsViewController.self)) as! SettingsViewController
