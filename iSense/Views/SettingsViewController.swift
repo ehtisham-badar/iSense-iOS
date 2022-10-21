@@ -41,6 +41,7 @@ class SettingsViewController: UIViewController {
     @IBOutlet weak var magnetSideConstraint: NSLayoutConstraint!
     
     
+    
     @IBOutlet weak var restartMessageTF: UITextField!
     @IBOutlet weak var restartSensorSeconds: UITextField!
     
@@ -50,18 +51,37 @@ class SettingsViewController: UIViewController {
     
     @IBOutlet weak var restartNotificationBackView: UIView!
     @IBOutlet weak var restartSwitchView: UIView!
+    @IBOutlet weak var vibrationSensorImage: UIImageView!
+    @IBOutlet weak var vibrationSideConstraint: NSLayoutConstraint!
+    @IBOutlet weak var hapticsTF: UITextField!
+    
+    @IBOutlet weak var vibrationSensorSwitchView: UIView!
+    @IBOutlet weak var vibrationSensorBackView: UIView!
+    
+    @IBOutlet weak var autoLockSensorImage: UIImageView!
+    @IBOutlet weak var autolockSensorSwitchView: UIView!
+    @IBOutlet weak var autolockSensorBackView: UIView!
+    @IBOutlet weak var autoLockSideContraint: NSLayoutConstraint!
+    @IBOutlet weak var heightOfAutoLockView: NSLayoutConstraint!
+    @IBOutlet weak var heightOfVibrationView: NSLayoutConstraint!
+    
+    
+    @IBOutlet weak var restartOnOffSideConstraint: NSLayoutConstraint!
+    @IBOutlet weak var restartOnOffBackView: UIView!
+    @IBOutlet weak var restartOnOffSwitchView: UIView!
+    
     //MARK: - Variables
     
     private var isNotificationOn: Bool = true
     private var isRestartOn: Bool = true
     private var isMovementOn: Bool = true
     private var isMagnetOn: Bool = true
+    private var isAutoLockOn: Bool = true
+    private var isVibrationOn: Bool = true
     private var isRestartOnOff: Bool = true
+    private var isSaveSettingPressed: Bool = false
     
-    
-    @IBOutlet weak var restartOnOffSideConstraint: NSLayoutConstraint!
-    @IBOutlet weak var restartOnOffBackView: UIView!
-    @IBOutlet weak var restartOnOffSwitchView: UIView!
+    var tap: UITapGestureRecognizer!
     
     //MARK: - Load View
     
@@ -175,7 +195,7 @@ class SettingsViewController: UIViewController {
     }
     
     func addGestureToDismissKeyboard(){
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(
+        tap = UITapGestureRecognizer(
             target: self,
             action: #selector(dismissKeyboard))
         
@@ -184,7 +204,37 @@ class SettingsViewController: UIViewController {
     }
     
     @objc func dismissKeyboard(){
+        if isSaveSettingPressed{
+            return
+        }
         if secondsTF.text != ""{
+            
+            var arrayDictionary = UserDefaults.standard.array(forKey: "data") ?? []
+            
+            var d1: [String:Any] = [
+                "seconds" : secondsTF.text ?? "",
+                "tilt_initial" : tiltInitialValueTF.text ?? "",
+                "tilt_final" : tiltFinalValueTF.text ?? "",
+                "magnet_initial" : magnetInitialValueTF.text ?? "",
+                "magnet_final" : magnetFinalValueTF.text ?? "",
+                "range_confirm" : rangeConfirmTF.text ?? "",
+                "wait" : waitTF.text ?? ""
+            ]
+                        
+            let d2 = [
+                    "after_notification" : notificationTF.text ?? "",
+                    "notification_message" : notificationMessageTF.text ?? "",
+                    "movement_message" : movementMessageTF.text ?? "",
+                    "magnet_message" : magnetMessageTF.text ?? "",
+                    "restart_message" : restartMessageTF.text ?? "",
+                    "restart_seconds" : restartSensorSeconds.text ?? ""
+            ]
+            d1.merge(dict: d2)
+            
+            arrayDictionary.append(d1)
+//
+            UserDefaults.standard.set(arrayDictionary, forKey: "data" )
+            
             UserDefaults.standard.set(secondsTF.text ?? "", forKey: "seconds")
             UserDefaults.standard.set(tiltInitialValueTF.text ?? "", forKey: "tilt_initial")
             UserDefaults.standard.set(tiltFinalValueTF.text ?? "", forKey: "tilt_final")
@@ -272,5 +322,70 @@ class SettingsViewController: UIViewController {
         mainHeightConstraint.constant = isMagnetOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
         magnetSensorBackView.backgroundColor = isMagnetOn ? UIColor.color1 : UIColor.red2
         magnetSensorSwitchView.backgroundColor = isMagnetOn ? UIColor.color2 : UIColor.red1
+    }
+    @IBAction func presetBtnPressed(_ sender: Any) {
+        let vc = storyboard?.instantiateViewController(withIdentifier: String(describing: PresetViewController.self)) as! PresetViewController
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    @IBAction func vibrationSensorBtn(_ sender: Any) {
+        UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+            self.vibrationSideConstraint.constant = (self.vibrationSideConstraint.constant == 0) ? 50 : 0
+            self.view.layoutIfNeeded()
+        }
+        isVibrationOn = (vibrationSideConstraint.constant == 0) ? true : false
+        UserDefaults.standard.set(isVibrationOn, forKey: "is_magnet_on")
+        mainHeightConstraint.constant = isVibrationOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+        vibrationSensorBackView.backgroundColor = isVibrationOn ? UIColor.color1 : UIColor.red2
+        vibrationSensorSwitchView.backgroundColor = isVibrationOn ? UIColor.color2 : UIColor.red1
+    }
+    @IBAction func saveSettingBtnPressed(_ sender: Any) {
+        isSaveSettingPressed = true
+        var arrayDictionary = UserDefaults.standard.array(forKey: "data") ?? []
+        
+        var d1: [String:Any] = [
+            "name": "Pre-Set \(arrayDictionary.count)",
+            "seconds" : secondsTF.text ?? "",
+            "tilt_initial" : tiltInitialValueTF.text ?? "",
+            "tilt_final" : tiltFinalValueTF.text ?? "",
+            "magnet_initial" : magnetInitialValueTF.text ?? "",
+            "magnet_final" : magnetFinalValueTF.text ?? "",
+            "range_confirm" : rangeConfirmTF.text ?? "",
+            "wait" : waitTF.text ?? ""
+        ]
+                    
+        let d2 = [
+                "after_notification" : notificationTF.text ?? "",
+                "notification_message" : notificationMessageTF.text ?? "",
+                "movement_message" : movementMessageTF.text ?? "",
+                "magnet_message" : magnetMessageTF.text ?? "",
+                "restart_message" : restartMessageTF.text ?? "",
+                "restart_seconds" : restartSensorSeconds.text ?? ""
+        ]
+        d1.merge(dict: d2)
+        
+        arrayDictionary.append(d1)
+        
+        UserDefaults.standard.set(arrayDictionary, forKey: "data")
+        
+        isSaveSettingPressed = false
+        
+    }
+    @IBAction func autoLockSwitchPressed(_ sender: Any) {
+        UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {
+            self.autoLockSideContraint.constant = (self.autoLockSideContraint.constant == 0) ? 50 : 0
+            self.view.layoutIfNeeded()
+        }
+        isAutoLockOn = (autoLockSideContraint.constant == 0) ? true : false
+        UserDefaults.standard.set(isAutoLockOn, forKey: "is_magnet_on")
+        mainHeightConstraint.constant = isAutoLockOn ? mainHeightConstraint.constant+130 : mainHeightConstraint.constant-100
+        autolockSensorBackView.backgroundColor = isAutoLockOn ? UIColor.color1 : UIColor.red2
+        autolockSensorSwitchView.backgroundColor = isAutoLockOn ? UIColor.color2 : UIColor.red1
+    }
+}
+extension Dictionary {
+    mutating func merge(dict: [Key: Value]){
+        for (k, v) in dict {
+            updateValue(v, forKey: k)
+        }
     }
 }

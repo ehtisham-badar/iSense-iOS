@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		FF6630B52901B95D007D6293 /* PresetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6630B42901B95D007D6293 /* PresetViewController.swift */; };
+		FF6630B92901BA4F007D6293 /* PresetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6630B72901BA4F007D6293 /* PresetTableViewCell.swift */; };
+		FF6630BA2901BA4F007D6293 /* PresetTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6630B82901BA4F007D6293 /* PresetTableViewCell.xib */; };
 		FF66B4B528B9EED600A4C27E /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF66B4B428B9EED600A4C27E /* AppDelegate.swift */; };
 		FF66B4B728B9EED600A4C27E /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF66B4B628B9EED600A4C27E /* SceneDelegate.swift */; };
 		FF66B4BC28B9EED600A4C27E /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = FF66B4BA28B9EED600A4C27E /* Main.storyboard */; };
@@ -27,6 +30,9 @@
 /* Begin PBXFileReference section */
 		049C234E28D88C720012FF5A /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		049C235028D88C720012FF5A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		FF6630B42901B95D007D6293 /* PresetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetViewController.swift; sourceTree = "<group>"; };
+		FF6630B72901BA4F007D6293 /* PresetTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetTableViewCell.swift; sourceTree = "<group>"; };
+		FF6630B82901BA4F007D6293 /* PresetTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PresetTableViewCell.xib; sourceTree = "<group>"; };
 		FF66B4B128B9EED600A4C27E /* iSense.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iSense.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		FF66B4B428B9EED600A4C27E /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		FF66B4B628B9EED600A4C27E /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -64,6 +70,15 @@
 				049C235028D88C720012FF5A /* Info.plist */,
 			);
 			path = smartwatch;
+			sourceTree = "<group>";
+		};
+		FF6630B62901BA3B007D6293 /* Cells */ = {
+			isa = PBXGroup;
+			children = (
+				FF6630B72901BA4F007D6293 /* PresetTableViewCell.swift */,
+				FF6630B82901BA4F007D6293 /* PresetTableViewCell.xib */,
+			);
+			path = Cells;
 			sourceTree = "<group>";
 		};
 		FF66B4A828B9EED600A4C27E = {
@@ -135,11 +150,13 @@
 		FF66B4CC28B9F01000A4C27E /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				FF6630B62901BA3B007D6293 /* Cells */,
 				FF66B4CD28B9F08A00A4C27E /* MainViewController.swift */,
 				FF66B4DC28B9FC7B00A4C27E /* TestViewController.swift */,
 				FF66B4DE28B9FC8300A4C27E /* SettingsViewController.swift */,
 				FFAAFDF128C289BB0097A457 /* BaseViewController.swift */,
 				FFAAFDF328C3814E0097A457 /* BlackScreenViewController.swift */,
+				FF6630B42901B95D007D6293 /* PresetViewController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -224,6 +241,7 @@
 				FF66B4D028B9F10600A4C27E /* Colors.xcassets in Resources */,
 				FF66B4BE28B9EEDA00A4C27E /* Assets.xcassets in Resources */,
 				FF66B4BC28B9EED600A4C27E /* Main.storyboard in Resources */,
+				FF6630BA2901BA4F007D6293 /* PresetTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -241,6 +259,8 @@
 				FFAAFDF428C3814E0097A457 /* BlackScreenViewController.swift in Sources */,
 				FF66B4D628B9F5CF00A4C27E /* UIColorExtension.swift in Sources */,
 				FFAAFDF228C289BB0097A457 /* BaseViewController.swift in Sources */,
+				FF6630B92901BA4F007D6293 /* PresetTableViewCell.swift in Sources */,
+				FF6630B52901B95D007D6293 /* PresetViewController.swift in Sources */,
 				FF66B4D428B9F5AF00A4C27E /* UIViewExtension.swift in Sources */,
 				FF66B4CE28B9F08A00A4C27E /* MainViewController.swift in Sources */,
 				FF66B4D828B9F5ED00A4C27E /* UIImageExtension.swift in Sources */,

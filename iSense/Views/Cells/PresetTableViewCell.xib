@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21225" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_0" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21207"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="PresetTableViewCell" rowHeight="152" id="KGk-i7-Jjw" customClass="PresetTableViewCell" customModule="iSense" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="416" height="152"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="416" height="152"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cI6-JJ-6Yx">
+                        <rect key="frame" x="0.0" y="0.0" width="416" height="142"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Pre-Set 01" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="HPY-fw-Djp">
+                                <rect key="frame" x="161.33333333333334" y="59.333333333333336" width="93.333333333333343" height="23.666666666666664"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Light" family="Helvetica Neue" pointSize="20"/>
+                                <color key="textColor" name="AppYellowColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                        <constraints>
+                            <constraint firstItem="HPY-fw-Djp" firstAttribute="centerY" secondItem="cI6-JJ-6Yx" secondAttribute="centerY" id="xxh-7j-4Ix"/>
+                            <constraint firstItem="HPY-fw-Djp" firstAttribute="centerX" secondItem="cI6-JJ-6Yx" secondAttribute="centerX" id="yqf-o7-RUr"/>
+                        </constraints>
+                        <userDefinedRuntimeAttributes>
+                            <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                <real key="value" value="25"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                <real key="value" value="1"/>
+                            </userDefinedRuntimeAttribute>
+                            <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                <color key="value" name="AppYellowColor"/>
+                            </userDefinedRuntimeAttribute>
+                        </userDefinedRuntimeAttributes>
+                    </view>
+                </subviews>
+                <color key="backgroundColor" name="AppDarkRedColor"/>
+                <constraints>
+                    <constraint firstAttribute="trailing" secondItem="cI6-JJ-6Yx" secondAttribute="trailing" id="Ssx-Z9-Dc2"/>
+                    <constraint firstItem="cI6-JJ-6Yx" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="k7h-rQ-viX"/>
+                    <constraint firstAttribute="bottom" secondItem="cI6-JJ-6Yx" secondAttribute="bottom" constant="10" id="kfI-m8-7hn"/>
+                    <constraint firstItem="cI6-JJ-6Yx" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="wZh-db-Ggq"/>
+                </constraints>
+            </tableViewCellContentView>
+            <viewLayoutGuide key="safeArea" id="njF-e1-oar"/>
+            <connections>
+                <outlet property="lblTxt" destination="HPY-fw-Djp" id="i7c-Gx-9Sh"/>
+                <outlet property="mainView" destination="cI6-JJ-6Yx" id="xtN-74-TKz"/>
+            </connections>
+            <point key="canvasLocation" x="204.61538461538461" y="26.303317535545023"/>
+        </tableViewCell>
+    </objects>
+    <resources>
+        <namedColor name="AppDarkRedColor">
+            <color red="0.22400000691413879" green="0.046999998390674591" blue="0.046999998390674591" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <namedColor name="AppYellowColor">
+            <color red="0.77600002288818359" green="0.67500001192092896" blue="0.3880000114440918" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+    </resources>
+</document>
