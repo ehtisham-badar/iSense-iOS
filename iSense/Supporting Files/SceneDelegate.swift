@@ -29,6 +29,51 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        
+        var arrayDictionary = UserDefaults.standard.array(forKey: "data") ?? []
+        
+        if(!isAppAlreadyLaunchedOnce()){
+            
+                        
+            var d1: [String:Any] = [
+                "seconds" : "5",
+                "tilt_initial" : "2",
+                "tilt_final" : "500",
+                "magnet_initial" : "2",
+                "magnet_final" : "500",
+                "range_confirm" : "1",
+                "wait" : "1"
+            ]
+                        
+            let d2 = [
+                "after_notification" : "1",
+                "notification_message" : "Started",
+                "movement_message" : "Phone",
+                "magnet_message" : "Magnet",
+                "restart_message" : "Restart",
+                "restart_seconds" : "2",
+                "is_vibration_on" : false,
+                "is_auto_lock_on" : true,
+                "no_of_vibrations" : "1",
+                "is_notification_on" : true,
+                "is_restart_on" : false,
+                "is_restart_on_notification" : true,
+                "is_movement_on" : true,
+                "is_magnet_on" : true
+            ] as [String : Any]
+            
+            d1.merge(dict: d2)
+            
+            arrayDictionary.append(d1)
+            
+            UserDefaults.standard.set(arrayDictionary, forKey: "data")
+        }
+        
+        let pre_selected = UserDefaults.standard.integer(forKey: "pre-selected")
+        
+        let dict = arrayDictionary[pre_selected] as! [String:Any]
+
+        UIApplication.shared.isIdleTimerDisabled = dict["is_auto_lock_on"] as? Bool ?? false
     }
 
     func sceneWillResignActive(_ scene: UIScene) {
@@ -48,5 +93,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
 
 
+    func isAppAlreadyLaunchedOnce()->Bool{
+        let defaults = UserDefaults.standard
+            
+        if defaults.bool(forKey: "isAppAlreadyLaunchedOnce"){
+            return true
+        }else{
+            defaults.set(true, forKey: "isAppAlreadyLaunchedOnce")
+            return false
+        }
+    }
 }
 

@@ -7,6 +7,7 @@
 
 import UIKit
 import CoreMotion
+import AudioToolbox
 
 
 class TestViewController: BaseViewController {
@@ -75,6 +76,10 @@ class TestViewController: BaseViewController {
     
     var is_restart_on_off = false
     
+    var isVibrationOn = false
+    
+    var no_of_vibrations = 0
+    
     @IBOutlet weak var lblRestartTimer: UILabel!
     
     
@@ -99,34 +104,43 @@ class TestViewController: BaseViewController {
         magnetDetections.removeAll()
         tiltDetections.removeAll()
         
-        notificationMessage = UserDefaults.standard.string(forKey: "notification_message") ?? ""
-        tiltNotificationMessage = UserDefaults.standard.string(forKey: "movement_message") ?? ""
-        magnetNotificationMessage = UserDefaults.standard.string(forKey: "magnet_message") ?? ""
-        restartNotificationMessage = UserDefaults.standard.string(forKey: "restart_message") ?? ""
+        let arrayDictionary = UserDefaults.standard.array(forKey: "data") ?? []
         
-        is_restart_notify_on = UserDefaults.standard.bool(forKey: "is_restart_on_notification")
+        let pre_selected = UserDefaults.standard.integer(forKey: "pre-selected")
         
-        is_restart_on_off = UserDefaults.standard.bool(forKey: "is_restart_on")
+        let dict = arrayDictionary[pre_selected] as! [String:Any]
         
-        let seconds = UserDefaults.standard.string(forKey: "restart_seconds") ?? "0"
+        notificationMessage = dict["notification_message"] as? String ?? ""
+        tiltNotificationMessage = dict["movement_message"] as? String ?? ""
+        magnetNotificationMessage = dict["magnet_message"] as? String ?? ""
+        restartNotificationMessage = dict["restart_message"] as? String ?? ""
+        
+        is_restart_notify_on = dict["is_restart_on_notification"] as! Bool
+        
+        is_restart_on_off = dict["is_restart_on"] as! Bool
+        
+        let seconds = dict["restart_seconds"] as? String ?? "0"
         restart_seconds = Int(seconds) ?? 0
         
         countRestart = restart_seconds
         
-        is_notification_on = UserDefaults.standard.bool(forKey: "is_notification_on")
-        is_movement_on = UserDefaults.standard.bool(forKey: "is_movement_on")
-        is_magnet_on = UserDefaults.standard.bool(forKey: "is_magnet_on")
-        range_confirm = UserDefaults.standard.string(forKey: "range_confirm") ?? "0"
-        wait_between_notifications = UserDefaults.standard.string(forKey: "wait") ?? "0"
+        is_notification_on = dict["is_notification_on"] as! Bool
+        is_movement_on =  dict["is_movement_on"] as! Bool
+        is_magnet_on = dict["is_magnet_on"] as! Bool
+        range_confirm = dict["range_confirm"] as? String ?? "0"
+        wait_between_notifications = dict["wait"] as? String ?? "0"
 
-        updateInterval = UserDefaults.standard.string(forKey: "seconds") ?? "no seconds saved"
+        updateInterval = dict["seconds"] as? String ?? "no seconds saved"
         count = Int(updateInterval) ?? 0
         lblStartTime.text = "\(count)"
         countTiltDetection = Int(range_confirm) ?? 0
-        tiltInitial = Int(UserDefaults.standard.string(forKey: "tilt_initial") ?? "0") ?? 0
-        tiltFinal = Int(UserDefaults.standard.string(forKey: "tilt_final")  ?? "0") ?? 0
-        magnetInitial = Int(UserDefaults.standard.string(forKey: "magnet_initial")  ?? "0") ?? 0
-        magnetFinal = Int(UserDefaults.standard.string(forKey: "magnet_final")  ?? "0") ?? 0
+        tiltInitial = Int(dict["tilt_initial"] as? String ?? "0") ?? 0
+        tiltFinal = Int(dict["tilt_final"] as? String  ?? "0") ?? 0
+        magnetInitial = Int(dict["magnet_initial"] as? String ?? "0") ?? 0
+        magnetFinal = Int(dict["magnet_final"] as? String  ?? "0") ?? 0
+        
+        isVibrationOn = dict["is_vibration_on"] as? Bool ?? false
+        no_of_vibrations = Int(dict["no_of_vibrations"] as? String ?? "0") ?? 0
         
         if (Int(restart_seconds) == 0 || !is_restart_on_off){
             restartSecondStackView.isHidden = true
@@ -466,6 +480,19 @@ class TestViewController: BaseViewController {
     }
     
     func sendNotification(title: String,body: String, secondsToShow: Int,category: String, startSensor: Bool = false){
+        
+        if(isVibrationOn) {
+            for _ in 0 ..< no_of_vibrations{
+                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
+            }
+            
+            if(startSensor) {
+                self.detectMagnometerReading()
+            }
+            
+            return
+        }
+        
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body

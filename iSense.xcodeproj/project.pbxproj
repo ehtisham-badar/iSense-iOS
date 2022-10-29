@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		04DB8ED12902CD7900EFD566 /* RenamePopupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 04DB8ED02902CD7900EFD566 /* RenamePopupViewController.swift */; };
+		72004B39158E6866E3AF076E /* Pods_iSense.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A815C5146F23337E93053426 /* Pods_iSense.framework */; };
 		FF6630B52901B95D007D6293 /* PresetViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6630B42901B95D007D6293 /* PresetViewController.swift */; };
 		FF6630B92901BA4F007D6293 /* PresetTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF6630B72901BA4F007D6293 /* PresetTableViewCell.swift */; };
 		FF6630BA2901BA4F007D6293 /* PresetTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = FF6630B82901BA4F007D6293 /* PresetTableViewCell.xib */; };
@@ -30,6 +32,10 @@
 /* Begin PBXFileReference section */
 		049C234E28D88C720012FF5A /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		049C235028D88C720012FF5A /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		04DB8ED02902CD7900EFD566 /* RenamePopupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RenamePopupViewController.swift; sourceTree = "<group>"; };
+		1873FA0E0403C636F9A6D6D6 /* Pods-iSense.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iSense.debug.xcconfig"; path = "Target Support Files/Pods-iSense/Pods-iSense.debug.xcconfig"; sourceTree = "<group>"; };
+		A815C5146F23337E93053426 /* Pods_iSense.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_iSense.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		F7C82326639961536523E401 /* Pods-iSense.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-iSense.release.xcconfig"; path = "Target Support Files/Pods-iSense/Pods-iSense.release.xcconfig"; sourceTree = "<group>"; };
 		FF6630B42901B95D007D6293 /* PresetViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetViewController.swift; sourceTree = "<group>"; };
 		FF6630B72901BA4F007D6293 /* PresetTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetTableViewCell.swift; sourceTree = "<group>"; };
 		FF6630B82901BA4F007D6293 /* PresetTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = PresetTableViewCell.xib; sourceTree = "<group>"; };
@@ -57,6 +63,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				72004B39158E6866E3AF076E /* Pods_iSense.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,6 +77,23 @@
 				049C235028D88C720012FF5A /* Info.plist */,
 			);
 			path = smartwatch;
+			sourceTree = "<group>";
+		};
+		139CA06537F4DD9D6696374D /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				A815C5146F23337E93053426 /* Pods_iSense.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		4372BBBFF379030A9CE6C0F9 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				1873FA0E0403C636F9A6D6D6 /* Pods-iSense.debug.xcconfig */,
+				F7C82326639961536523E401 /* Pods-iSense.release.xcconfig */,
+			);
+			path = Pods;
 			sourceTree = "<group>";
 		};
 		FF6630B62901BA3B007D6293 /* Cells */ = {
@@ -87,6 +111,8 @@
 				FF66B4B328B9EED600A4C27E /* iSense */,
 				049C234D28D88C720012FF5A /* smartwatch */,
 				FF66B4B228B9EED600A4C27E /* Products */,
+				4372BBBFF379030A9CE6C0F9 /* Pods */,
+				139CA06537F4DD9D6696374D /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -157,6 +183,7 @@
 				FFAAFDF128C289BB0097A457 /* BaseViewController.swift */,
 				FFAAFDF328C3814E0097A457 /* BlackScreenViewController.swift */,
 				FF6630B42901B95D007D6293 /* PresetViewController.swift */,
+				04DB8ED02902CD7900EFD566 /* RenamePopupViewController.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -186,9 +213,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = FF66B4C528B9EEDA00A4C27E /* Build configuration list for PBXNativeTarget "iSense" */;
 			buildPhases = (
+				06E1FFC0B5C0818FFE18E553 /* [CP] Check Pods Manifest.lock */,
 				FF66B4AD28B9EED600A4C27E /* Sources */,
 				FF66B4AE28B9EED600A4C27E /* Frameworks */,
 				FF66B4AF28B9EED600A4C27E /* Resources */,
+				7D46AFB70D987CF0C4A1CC47 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -247,6 +276,48 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		06E1FFC0B5C0818FFE18E553 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-iSense-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7D46AFB70D987CF0C4A1CC47 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-iSense/Pods-iSense-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-iSense/Pods-iSense-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-iSense/Pods-iSense-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		FF66B4AD28B9EED600A4C27E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -263,6 +334,7 @@
 				FF6630B52901B95D007D6293 /* PresetViewController.swift in Sources */,
 				FF66B4D428B9F5AF00A4C27E /* UIViewExtension.swift in Sources */,
 				FF66B4CE28B9F08A00A4C27E /* MainViewController.swift in Sources */,
+				04DB8ED12902CD7900EFD566 /* RenamePopupViewController.swift in Sources */,
 				FF66B4D828B9F5ED00A4C27E /* UIImageExtension.swift in Sources */,
 				FF66B4DF28B9FC8300A4C27E /* SettingsViewController.swift in Sources */,
 			);
@@ -406,11 +478,12 @@
 		};
 		FF66B4C628B9EEDA00A4C27E /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1873FA0E0403C636F9A6D6D6 /* Pods-iSense.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 652N83SUWA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iSense/Info.plist;
@@ -438,11 +511,12 @@
 		};
 		FF66B4C728B9EEDA00A4C27E /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F7C82326639961536523E401 /* Pods-iSense.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 3;
+				CURRENT_PROJECT_VERSION = 7;
 				DEVELOPMENT_TEAM = 652N83SUWA;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = iSense/Info.plist;

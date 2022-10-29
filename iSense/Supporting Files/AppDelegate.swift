@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import IQKeyboardManagerSwift
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate,UNUserNotificationCenterDelegate {
@@ -24,33 +25,79 @@ class AppDelegate: UIResponder, UIApplicationDelegate,UNUserNotificationCenterDe
                 }
             }
         
+        var arrayDictionary = UserDefaults.standard.array(forKey: "data") ?? []
+                
         if(!isAppAlreadyLaunchedOnce()){
-            UserDefaults.standard.set("5", forKey: "seconds")
-            UserDefaults.standard.set("2", forKey: "tilt_initial")
-            UserDefaults.standard.set("500", forKey: "tilt_final")
-            UserDefaults.standard.set("2", forKey: "magnet_initial")
-            UserDefaults.standard.set("500", forKey: "magnet_final")
-            UserDefaults.standard.set("1", forKey: "range_confirm")
-            UserDefaults.standard.set("1", forKey: "wait")
-            UserDefaults.standard.set("1", forKey: "after_notification")
             
-            UserDefaults.standard.set("Started", forKey: "notification_message")
-            UserDefaults.standard.set("Phone", forKey: "movement_message")
-            UserDefaults.standard.set("Magnet", forKey: "magnet_message")
-            UserDefaults.standard.set(true, forKey: "is_notification_on")
-            UserDefaults.standard.set(true, forKey: "is_movement_on")
-            UserDefaults.standard.set(true, forKey: "is_magnet_on")
+                        
+            var d1: [String:Any] = [
+                "seconds" : "5",
+                "tilt_initial" : "2",
+                "tilt_final" : "500",
+                "magnet_initial" : "2",
+                "magnet_final" : "500",
+                "range_confirm" : "1",
+                "wait" : "1"
+            ]
+                        
+            let d2 = [
+                "after_notification" : "1",
+                "notification_message" : "Started",
+                "movement_message" : "Phone",
+                "magnet_message" : "Magnet",
+                "restart_message" : "Restart",
+                "restart_seconds" : "2",
+                "is_vibration_on" : false,
+                "is_auto_lock_on" : true,
+                "no_of_vibrations" : "1",
+                "is_notification_on" : true,
+                "is_restart_on" : false,
+                "is_restart_on_notification" : true,
+                "is_movement_on" : true,
+                "is_magnet_on" : true
+            ] as [String : Any]
             
-            UserDefaults.standard.set("Restart", forKey: "restart_message")
+            d1.merge(dict: d2)
             
-            UserDefaults.standard.set(true, forKey: "is_restart_on_notification")
+            arrayDictionary.append(d1)
             
-            UserDefaults.standard.set(false, forKey: "is_restart_on")
+//            UserDefaults.standard.set("5", forKey: "seconds")
+//            UserDefaults.standard.set("2", forKey: "tilt_initial")
+//            UserDefaults.standard.set("500", forKey: "tilt_final")
+//            UserDefaults.standard.set("2", forKey: "magnet_initial")
+//            UserDefaults.standard.set("500", forKey: "magnet_final")
+//            UserDefaults.standard.set("1", forKey: "range_confirm")
+//            UserDefaults.standard.set("1", forKey: "wait")
+//            UserDefaults.standard.set("1", forKey: "after_notification")
+//
+//            UserDefaults.standard.set("Started", forKey: "notification_message")
+//            UserDefaults.standard.set("Phone", forKey: "movement_message")
+//            UserDefaults.standard.set("Magnet", forKey: "magnet_message")
+//            UserDefaults.standard.set(true, forKey: "is_notification_on")
+//            UserDefaults.standard.set(true, forKey: "is_movement_on")
+//            UserDefaults.standard.set(true, forKey: "is_magnet_on")
+//
+//            UserDefaults.standard.set("Restart", forKey: "restart_message")
+//
+//            UserDefaults.standard.set(true, forKey: "is_restart_on_notification")
+//
+//            UserDefaults.standard.set(false, forKey: "is_restart_on")
+//
+//            UserDefaults.standard.set("2", forKey: "restart_seconds")
+//
+//            UserDefaults.standard.set(0, forKey: "pre-selected")
             
-            UserDefaults.standard.set("2", forKey: "restart_seconds")
+            UserDefaults.standard.set(arrayDictionary, forKey: "data")
         }
         
-        UIApplication.shared.isIdleTimerDisabled = true
+        
+        let pre_selected = UserDefaults.standard.integer(forKey: "pre-selected")
+        
+        let dict = arrayDictionary[pre_selected] as! [String:Any]
+
+        UIApplication.shared.isIdleTimerDisabled = dict["is_auto_lock_on"] as? Bool ?? false
+                
+        IQKeyboardManager.shared.enable = true
         
         return true
     }

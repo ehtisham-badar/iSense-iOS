@@ -1,0 +1,6 @@
+framework module Pods_iSense {
+  umbrella header "Pods-iSense-umbrella.h"
+
+  export *
+  module * { export * }
+}

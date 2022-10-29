@@ -1,0 +1,10 @@
+<svg id="Back_Button" data-name="Back Button" xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 120 120">
+  <g id="Ellipse_3" data-name="Ellipse 3" fill="none" stroke="#aa2020" stroke-width="3">
+    <circle cx="60" cy="60" r="60" stroke="none"/>
+    <circle cx="60" cy="60" r="58.5" fill="none"/>
+  </g>
+  <g id="Group_113" data-name="Group 113">
+    <path id="Path_37" data-name="Path 37" d="M2889.768,1510.486l42.912,42.912" transform="translate(2971.224 1591.942) rotate(180)" fill="none" stroke="#f33" stroke-width="3"/>
+    <path id="Path_307" data-name="Path 307" d="M0,42.912,42.912,0" transform="translate(38.544 38.544)" fill="none" stroke="#f33" stroke-width="3"/>
+  </g>
+</svg>
