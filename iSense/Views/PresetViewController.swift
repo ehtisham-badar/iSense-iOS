@@ -23,12 +23,12 @@ class PresetViewController: UIViewController,RemoveEditDelegate {
         data = UserDefaults.standard.object(forKey: "data") as? [[String:Any]] ?? [[String:Any]]()
         
         selectedIndex = UserDefaults.standard.integer(forKey: "pre-selected")
-        
-        print(selectedIndex)
-        
+                
         if(selectedIndex <= 0){
             editPresetView.isHidden = true
         }
+        
+        tableView.separatorStyle = .none
     }
     
     @IBAction func backPressed(_ sender: Any) {

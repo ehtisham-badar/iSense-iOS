@@ -265,7 +265,7 @@ class SettingsViewController: UIViewController,UIGestureRecognizerDelegate {
             
             var arrayDictionary = UserDefaults.standard.array(forKey: "data") ?? []
             
-            let pre_selected = UserDefaults.standard.integer(forKey: "pre-selected")
+            let pre_selected = 0
                         
             var d1: [String:Any] = [
                 "seconds" : secondsTF.text ?? "",
@@ -299,6 +299,10 @@ class SettingsViewController: UIViewController,UIGestureRecognizerDelegate {
             arrayDictionary[pre_selected] = d1
             
             UserDefaults.standard.set(arrayDictionary, forKey: "data")
+            
+            UserDefaults.standard.set(0,forKey: "pre-selected")
+            
+            setInitialPreset()
             
 //            UserDefaults.standard.set(secondsTF.text ?? "", forKey: "seconds")
 //            UserDefaults.standard.set(tiltInitialValueTF.text ?? "", forKey: "tilt_initial")
@@ -420,9 +424,7 @@ class SettingsViewController: UIViewController,UIGestureRecognizerDelegate {
         vc.modalTransitionStyle = .crossDissolve
         vc.modalPresentationStyle = .overCurrentContext
         vc.isFromRename = true
-//        vc.index = selectedIndex
         vc.delegate = self
-        
         self.present(vc, animated: true)
     }
     func saveSetting(name: String){
@@ -455,6 +457,8 @@ class SettingsViewController: UIViewController,UIGestureRecognizerDelegate {
                 "is_magnet_on" : isMagnetOn
         ] as [String : Any]
         
+        d1["name"] = name
+
         d1.merge(dict: d2)
         
 //        var flag = true
@@ -470,13 +474,12 @@ class SettingsViewController: UIViewController,UIGestureRecognizerDelegate {
 //        }
         
         //if flag {
-            d1["name"] = name
             arrayDictionary.append(d1)
             
-            let controller = UIAlertController(title: nil, message: "Settings Saved", preferredStyle: .alert)
-            controller.addAction(UIAlertAction(title: "Ok", style: .cancel))
-            
-            self.present(controller, animated: true)
+//            let controller = UIAlertController(title: nil, message: "Settings Saved", preferredStyle: .alert)
+//            controller.addAction(UIAlertAction(title: "Ok", style: .cancel))
+//
+//            self.present(controller, animated: true)
 //        }else{
 //            let controller = UIAlertController(title: nil, message: "Settings Already Exists", preferredStyle: .alert)
 //            controller.addAction(UIAlertAction(title: "Ok", style: .cancel))
@@ -485,6 +488,10 @@ class SettingsViewController: UIViewController,UIGestureRecognizerDelegate {
 //        }
                 
         UserDefaults.standard.set(arrayDictionary, forKey: "data")
+        
+        UserDefaults.standard.set(arrayDictionary.count - 1, forKey: "pre-selected")
+        
+        setInitialPreset()
     }
     @IBAction func autoLockSwitchPressed(_ sender: Any) {
         UIView.animate(withDuration: 0.5, delay: 0.1, options: .curveEaseInOut) {

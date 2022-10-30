@@ -25,6 +25,7 @@ class RenamePopupViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         addGesture()
+    
         if !isFromRename{
             data = UserDefaults.standard.object(forKey: "data") as? [[String:Any]] ?? [[String:Any]]()
 
@@ -37,6 +38,15 @@ class RenamePopupViewController: UIViewController {
         deleteView.isHidden = isFromRename ? true : false
     }
     
+    @IBAction func nameChange(_ sender: Any) {
+        if name.text == ""{
+            let arbitraryValue: Int = 5
+            if let newPosition = name.position(from: name.beginningOfDocument, offset: arbitraryValue) {
+
+                name.selectedTextRange = name.textRange(from: newPosition, to: newPosition)
+            }
+        }
+    }
     @IBAction func crossBtnPressed(_ sender: Any) {
         self.dismiss(animated: true)
     }
