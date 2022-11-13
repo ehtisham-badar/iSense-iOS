@@ -470,14 +470,7 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
     func sendNotification(title: String,body: String, secondsToShow: Int,category: String, startSensor: Bool = false){
         
         if(isVibrationOn) {
-            for _ in 0 ..< no_of_vibrations{
-                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
-            }
-            
-            if(startSensor) {
-                self.detectMagnometerReading()
-            }
-            
+            vibrate(count: no_of_vibrations,startSensor: startSensor)
             return
         }
         
@@ -505,4 +498,16 @@ class MainViewController: BaseViewController, UNUserNotificationCenterDelegate {
             }
         }
     }
+    
+    func vibrate(count: Int,startSensor: Bool) {
+           if count == 0 {
+               if(startSensor){
+                   self.detectMagnometerReading()
+               }
+               return
+           }
+           AudioServicesPlaySystemSoundWithCompletion(kSystemSoundID_Vibrate) { [weak self] in
+               self?.vibrate(count: count - 1,startSensor: startSensor)
+           }
+       }
 }

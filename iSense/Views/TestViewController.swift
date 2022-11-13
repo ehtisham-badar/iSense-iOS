@@ -8,6 +8,7 @@
 import UIKit
 import CoreMotion
 import AudioToolbox
+import CoreHaptics
 
 
 class TestViewController: BaseViewController {
@@ -82,6 +83,8 @@ class TestViewController: BaseViewController {
     
     @IBOutlet weak var lblRestartTimer: UILabel!
     
+    private var engine: CHHapticEngine?
+    
     
     //MARK: - Load View
     
@@ -96,6 +99,8 @@ class TestViewController: BaseViewController {
         super.viewWillAppear(animated)
         
         reinitializeAll()
+        
+        prepareHaptic()
     }
     
     func reinitializeAll(){
@@ -482,14 +487,7 @@ class TestViewController: BaseViewController {
     func sendNotification(title: String,body: String, secondsToShow: Int,category: String, startSensor: Bool = false){
         
         if(isVibrationOn) {
-            for _ in 0 ..< no_of_vibrations{
-                AudioServicesPlayAlertSound(SystemSoundID(kSystemSoundID_Vibrate))
-            }
-            
-            if(startSensor) {
-                self.detectMagnometerReading()
-            }
-            
+            vibrate(count: no_of_vibrations,startSensor: startSensor)
             return
         }
         
@@ -515,5 +513,18 @@ class TestViewController: BaseViewController {
                 }
             }
         }
+    }
+    
+    func vibrate(count: Int,startSensor: Bool) {
+           if count == 0 {
+               if(startSensor){
+                   self.detectMagnometerReading()
+               }
+               return
+           }
+
+           AudioServicesPlaySystemSoundWithCompletion(kSystemSoundID_Vibrate) { [weak self] in
+               self?.vibrate(count: count - 1,startSensor: startSensor)
+           }
     }
 }
