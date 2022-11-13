@@ -100,7 +100,7 @@ class TestViewController: BaseViewController {
         
         reinitializeAll()
         
-        prepareHaptic()
+//        prepareHaptic()
     }
     
     func reinitializeAll(){
